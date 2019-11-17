@@ -28,16 +28,19 @@ Project File Date:  11/17/2019
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'E:\Keil_v5\ARM\ARMCC\Bin'
 Rebuild target 'Target 1'
 assembling asm_main.s...
-asm_main.s(43): warning: A1865W: '#' not seen before constant expression
-asm_main.s(48): warning: A1865W: '#' not seen before constant expression
-asm_main.s(90): warning: A1865W: '#' not seen before constant expression
-asm_main.s(97): warning: A1581W: Added 2 bytes of padding at address 0x52
+asm_main.s(59): warning: A1865W: '#' not seen before constant expression
+asm_main.s(104): warning: A1865W: '#' not seen before constant expression
+asm_main.s(111): warning: A1865W: '#' not seen before constant expression
+asm_main.s(115): warning: A1581W: Added 2 bytes of padding at address 0x56
 assembling startup_msp432p401r_uvision.s...
 compiling main.c...
+main.c(46): warning:  #223-D: function "asm_main" declared implicitly
+  		asm_main(); // to call assembly code
+main.c: 1 warning, 0 errors
 compiling system_msp432p401r.c...
 linking...
-Program Size: Code=452 RO-data=340 RW-data=0 ZI-data=608  
-".\Objects\7-seg-assembly.axf" - 0 Error(s), 4 Warning(s).
+Program Size: Code=564 RO-data=340 RW-data=0 ZI-data=608  
+".\Objects\7-seg-assembly.axf" - 0 Error(s), 5 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -63,8 +66,8 @@ Package Vendor: TexasInstruments
    * Component: ARM::CMSIS:CORE:5.2.0
 
    * Component: TexasInstruments::Device:Startup:3.2.2
-      Source file:   Device\Source\system_msp432p401r.c
       Include file:  Device\Include\msp_compatibility.h
+      Source file:   Device\Source\system_msp432p401r.c
       Source file:   Device\Source\startup_msp432p401r_uvision.s
       Source file:   Examples\BlinkLED\blinkLED.c
       Source file:   Examples\EmptyMain\main.c

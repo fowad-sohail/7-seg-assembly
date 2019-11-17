@@ -43,6 +43,6 @@
 int main(void)
 {
     WDT_A->CTL = WDT_A_CTL_PW | WDT_A_CTL_HOLD;  // Stop watchdog timer
-		extern void asm_main(); // to call assembly code
+		asm_main(); // to call assembly code
     while(1);
 }
