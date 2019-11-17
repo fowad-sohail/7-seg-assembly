@@ -81,11 +81,11 @@ asm_main
 
 
 loop
-        BL		state5
+        BL		stateF
         
         B       loop	; repeat the loop
 
-; STATES
+; STATES - these control what character is on the 7 segment display
 ;-------------------------------------------------------------------------------
 state0
 	BL displayA
@@ -140,6 +140,7 @@ state5
 
 state6
 	BL displayA
+	BL displayC
 	BL displayD
 	BL displayE
 	BL displayF
@@ -231,7 +232,7 @@ stateF
 
 ; ------------------------------------------------------------------------------
 
-; SUBROUTINES
+; SUBROUTINES - these control which segment to light up
 ; ------------------------------------------------------------------------------
 delayMs
        
