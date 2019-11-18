@@ -22,6 +22,7 @@ P5DIR EQU 0x40004C44
 	
 	
 UPmask EQU 0x2 ; bitmask P1.1
+DOWNmask EQU 0x10 ; bitmask P1.4
 	
 
 ; masks for all segments of the display
@@ -83,6 +84,9 @@ loop
 ; STATES - these control what character is on the 7 segment display
 ;-------------------------------------------------------------------------------
 state0
+	LDR     R0, =150000
+    BL      delayMs
+	
 	BL allOFF
 	
 	; to count up to 1
@@ -101,7 +105,7 @@ state0
 	B state0
 ;-------------------------------------------------------------------------------
 state1
-	LDR     R0, =300000
+	LDR     R0, =150000
     BL      delayMs
 	
 	BL allOFF
@@ -111,6 +115,12 @@ state1
 	LDRB r1, [r0]
 	TST r1, UPmask
 	BEQ state2
+	
+	; to count down to 1
+	LDR r0, =P1IN
+	LDRB r1, [r0]
+	TST r1, DOWNmask
+	BEQ state0
 
 	BL displayB
 	BL displayC
@@ -118,13 +128,16 @@ state1
 	B state1
 ;-------------------------------------------------------------------------------
 state2
+	LDR     R0, =150000
+    BL      delayMs
+	
 	BL allOFF
 	
-;	; to count up to 3
-;	LDR r0, =P1IN
-;	LDRB r1, [r0]
-;	TST r1, UPmask
-;	BEQ state3
+	; to count up to 3
+	LDR r0, =P1IN
+	LDRB r1, [r0]
+	TST r1, UPmask
+	BEQ state3
 
 	BL displayA
 	BL displayB
@@ -134,226 +147,265 @@ state2
 	
 	B state2
 ;-------------------------------------------------------------------------------
-;state3
-;	BL allOFF
-;	
-;	; to count up to 4
-;	LDR r0, =P1IN
-;	LDRB r1, [r0]
-;	TST r1, UPmask
-;	BEQ state4
+state3
+	LDR     R0, =150000
+    BL      delayMs
+	
+	BL allOFF
+	
+	; to count up to 4
+	LDR r0, =P1IN
+	LDRB r1, [r0]
+	TST r1, UPmask
+	BEQ state4
 
-;	BL displayA
-;	BL displayB
-;	BL displayC
-;	BL displayD
-;	BL displayG
-;	
-;	B state3
-;;-------------------------------------------------------------------------------
-;state4
-;	BL allOFF
-;	
-;	; to count up to 5
-;	LDR r0, =P1IN
-;	LDRB r1, [r0]
-;	TST r1, UPmask
-;	BEQ state5
-;	
-;	BL displayB
-;	BL displayC
-;	BL displayF
-;	BL displayG
+	BL displayA
+	BL displayB
+	BL displayC
+	BL displayD
+	BL displayG
+	
+	B state3
+;-------------------------------------------------------------------------------
+state4
+	LDR     R0, =150000
+    BL      delayMs
+	
+	BL allOFF
+	
+	; to count up to 5
+	LDR r0, =P1IN
+	LDRB r1, [r0]
+	TST r1, UPmask
+	BEQ state5
+	
+	BL displayB
+	BL displayC
+	BL displayF
+	BL displayG
 
-;	B state4
-;;-------------------------------------------------------------------------------
-;state5
-;	BL allOFF
-;	
-;	; to count up to 6
-;	LDR r0, =P1IN
-;	LDRB r1, [r0]
-;	TST r1, UPmask
-;	BEQ state6
+	B state4
+;-------------------------------------------------------------------------------
+state5
+	LDR     R0, =150000
+    BL      delayMs
+	
+	BL allOFF
+	
+	; to count up to 6
+	LDR r0, =P1IN
+	LDRB r1, [r0]
+	TST r1, UPmask
+	BEQ state6
 
-;	BL displayA
-;	BL displayC
-;	BL displayD
-;	BL displayF
-;	BL displayG
-;	
-;	B state5
-;;-------------------------------------------------------------------------------
-;state6
-;	BL allOFF
-;	
-;	; to count up to 7
-;	LDR r0, =P1IN
-;	LDRB r1, [r0]
-;	TST r1, UPmask
-;	BEQ state7
-;	
-;	BL displayA
-;	BL displayC
-;	BL displayD
-;	BL displayE
-;	BL displayF
-;	BL displayG
-;	
-;	B state6
-;;-------------------------------------------------------------------------------
-;state7
-;	BL allOFF
-;	
-;	; to count up to 8
-;	LDR r0, =P1IN
-;	LDRB r1, [r0]
-;	TST r1, UPmask
-;	BEQ state8
-;	
-;	BL displayA
-;	BL displayB
-;	BL displayC
-;	
-;	B state7
-;;-------------------------------------------------------------------------------
-;state8
-;	BL allOFF
-;	
-;	; to count up to 9
-;	LDR r0, =P1IN
-;	LDRB r1, [r0]
-;	TST r1, UPmask
-;	BEQ state9
+	BL displayA
+	BL displayC
+	BL displayD
+	BL displayF
+	BL displayG
+	
+	B state5
+;-------------------------------------------------------------------------------
+state6
+	LDR     R0, =150000
+    BL      delayMs
+	
+	BL allOFF
+	
+	; to count up to 7
+	LDR r0, =P1IN
+	LDRB r1, [r0]
+	TST r1, UPmask
+	BEQ state7
+	
+	BL displayA
+	BL displayC
+	BL displayD
+	BL displayE
+	BL displayF
+	BL displayG
+	
+	B state6
+;-------------------------------------------------------------------------------
+state7
+	LDR     R0, =150000
+    BL      delayMs
+	
+	BL allOFF
+	
+	; to count up to 8
+	LDR r0, =P1IN
+	LDRB r1, [r0]
+	TST r1, UPmask
+	BEQ state8
+	
+	BL displayA
+	BL displayB
+	BL displayC
+	
+	B state7
+;-------------------------------------------------------------------------------
+state8
+	LDR     R0, =150000
+    BL      delayMs
+	
+	BL allOFF
+	
+	; to count up to 9
+	LDR r0, =P1IN
+	LDRB r1, [r0]
+	TST r1, UPmask
+	BEQ state9
 
-;	BL displayA
-;	BL displayB
-;	BL displayC
-;	BL displayD
-;	BL displayE
-;	BL displayF
-;	BL displayG
-;	
-;	B state8
-;;-------------------------------------------------------------------------------
-;state9
-;	BL allOFF
-;	
-;	; to count up to A
-;	LDR r0, =P1IN
-;	LDRB r1, [r0]
-;	TST r1, UPmask
-;	BEQ stateA
+	BL displayA
+	BL displayB
+	BL displayC
+	BL displayD
+	BL displayE
+	BL displayF
+	BL displayG
+	
+	B state8
+;-------------------------------------------------------------------------------
+state9
+	LDR     R0, =150000
+    BL      delayMs
+	
+	BL allOFF
+	
+	; to count up to A
+	LDR r0, =P1IN
+	LDRB r1, [r0]
+	TST r1, UPmask
+	BEQ stateA
 
-;	BL displayA
-;	BL displayB
-;	BL displayC
-;	BL displayD
-;	BL displayF
-;	BL displayG
-;	
-;	B state9
-;;-------------------------------------------------------------------------------	
-;stateA
-;	BL allOFF
-;	
-;	; to count up to B
-;	LDR r0, =P1IN
-;	LDRB r1, [r0]
-;	TST r1, UPmask
-;	BEQ stateB
-;	
-;	BL displayA
-;	BL displayB
-;	BL displayC
-;	BL displayE
-;	BL displayF
-;	BL displayG
-;	
-;	B stateA
-;;-------------------------------------------------------------------------------
-;stateB
-;	BL allOFF
-;	
-;	; to count up to C
-;	LDR r0, =P1IN
-;	LDRB r1, [r0]
-;	TST r1, UPmask
-;	BEQ stateC
-;	
-;	BL displayC
-;	BL displayD
-;	BL displayE
-;	BL displayF
-;	BL displayG
-;	
-;	B stateB
-;;-------------------------------------------------------------------------------
-;stateC
-;	BL allOFF
-;	
-;	; to count up to D
-;	LDR r0, =P1IN
-;	LDRB r1, [r0]
-;	TST r1, UPmask
-;	BEQ stateD
-;	
-;	BL displayA
-;	BL displayD
-;	BL displayE
-;	BL displayF
-;	
-;	B stateC
-;;-------------------------------------------------------------------------------
-;stateD
-;	BL allOFF
-;	
-;	; to count up to E
-;	LDR r0, =P1IN
-;	LDRB r1, [r0]
-;	TST r1, UPmask
-;	BEQ stateE
+	BL displayA
+	BL displayB
+	BL displayC
+	BL displayD
+	BL displayF
+	BL displayG
+	
+	B state9
+;-------------------------------------------------------------------------------	
+stateA
+	LDR     R0, =150000
+    BL      delayMs
+	
+	BL allOFF
+	
+	; to count up to B
+	LDR r0, =P1IN
+	LDRB r1, [r0]
+	TST r1, UPmask
+	BEQ stateB
+	
+	BL displayA
+	BL displayB
+	BL displayC
+	BL displayE
+	BL displayF
+	BL displayG
+	
+	B stateA
+;-------------------------------------------------------------------------------
+stateB
+	LDR     R0, =150000
+    BL      delayMs
+	
+	BL allOFF
+	
+	; to count up to C
+	LDR r0, =P1IN
+	LDRB r1, [r0]
+	TST r1, UPmask
+	BEQ stateC
+	
+	BL displayC
+	BL displayD
+	BL displayE
+	BL displayF
+	BL displayG
+	
+	B stateB
+;-------------------------------------------------------------------------------
+stateC
+	LDR     R0, =150000
+    BL      delayMs
+	
+	BL allOFF
+	
+	; to count up to D
+	LDR r0, =P1IN
+	LDRB r1, [r0]
+	TST r1, UPmask
+	BEQ stateD
+	
+	BL displayA
+	BL displayD
+	BL displayE
+	BL displayF
+	
+	B stateC
+;-------------------------------------------------------------------------------
+stateD
+	LDR     R0, =150000
+    BL      delayMs
+	
+	BL allOFF
+	
+	; to count up to E
+	LDR r0, =P1IN
+	LDRB r1, [r0]
+	TST r1, UPmask
+	BEQ stateE
 
-;	BL displayB
-;	BL displayC
-;	BL displayD
-;	BL displayE
-;	BL displayG
-;	
-;	B stateD
-;;-------------------------------------------------------------------------------	
-;stateE
-;	BL allOFF
-;	
-;	; to count up to F
-;	LDR r0, =P1IN
-;	LDRB r1, [r0]
-;	TST r1, UPmask
-;	BEQ stateF
+	BL displayB
+	BL displayC
+	BL displayD
+	BL displayE
+	BL displayG
+	
+	B stateD
+;-------------------------------------------------------------------------------	
+stateE
+	LDR     R0, =150000
+    BL      delayMs
+	
+	BL allOFF
+	
+	; to count up to F
+	LDR r0, =P1IN
+	LDRB r1, [r0]
+	TST r1, UPmask
+	BEQ stateF
 
-;	BL displayA
-;	BL displayD
-;	BL displayE
-;	BL displayF
-;	BL displayG
-;	
-;	B stateE
-;;-------------------------------------------------------------------------------
-;stateF
-;	BL allOFF
-;	
-;	; if count up button pressed, roll over to 0
-;	LDR r0, =P1IN
-;	LDRB r1, [r0]
-;	TST r1, UPmask
-;	BEQ state0
+	BL displayA
+	BL displayD
+	BL displayE
+	BL displayF
+	BL displayG
+	
+	B stateE
+;-------------------------------------------------------------------------------
+stateF
+	LDR     R0, =150000
+    BL      delayMs
+	
+	BL allOFF
+	
+	; if count up button pressed, roll over to 0
+	LDR r0, =P1IN
+	LDRB r1, [r0]
+	TST r1, UPmask
+	BEQ state0
 
-;	BL displayA
-;	BL displayE
-;	BL displayF
-;	BL displayG
-;	
-;	B stateF
+	BL displayA
+	BL displayE
+	BL displayF
+	BL displayG
+	
+	B stateF
 ; ------------------------------------------------------------------------------
 
 ; SUBROUTINES - these control which segment to light up

@@ -79,38 +79,38 @@ ARM Macro Assembler    Page 2
    39 00000000                 EXPORT           asm_main
    40 00000000         
    41 00000000         asm_main
-   42 00000000 4849            LDR              R0, =P2DIR
+   42 00000000 48D6            LDR              R0, =P2DIR
    43 00000002 7801            LDRB             R1, [R0]
    44 00000004 F041 0108       ORR              R1, #8
    45 00000008 7001            STRB             R1, [R0]
    46 0000000A         
-   47 0000000A 4848            LDR              R0, =P1DIR
+   47 0000000A 48D5            LDR              R0, =P1DIR
    48 0000000C 7801            LDRB             R1, [R0]
    49 0000000E F041 0102       ORR              R1, #2
    50 00000012 7001            STRB             R1, [R0]
    51 00000014         
-   52 00000014 4846            LDR              R0, =P3DIR
+   52 00000014 48D3            LDR              R0, =P3DIR
    53 00000016 7801            LDRB             R1, [R0]
    54 00000018 F041 01E0       ORR              R1, #224
    55 0000001C 7001            STRB             R1, [R0]
    56 0000001E         
-   57 0000001E 4845            LDR              R0, =P5DIR
+   57 0000001E 48D2            LDR              R0, =P5DIR
    58 00000020 7801            LDRB             R1, [R0]
    59 00000022 F041 0107       ORR              R1, #7
    60 00000026 7001            STRB             R1, [R0]
    61 00000028         
    62 00000028         ; initally clear all the ports - P2, P3, P5
-   63 00000028 4843            LDR              R0, =P2OUT
+   63 00000028 48D0            LDR              R0, =P2OUT
    64 0000002A 7801            LDRB             R1, [R0]
    65 0000002C F041 0108       ORR              R1, segB_mask
    66 00000030 7001            STRB             R1, [R0]
    67 00000032         
-   68 00000032 4842            LDR              R0, =P3OUT
+   68 00000032 48CF            LDR              R0, =P3OUT
    69 00000034 7801            LDRB             R1, [R0]
    70 00000036 F041 01E0       ORR              R1, #224
    71 0000003A 7001            STRB             R1, [R0]
    72 0000003C         
-   73 0000003C 4840            LDR              R0, =P5OUT
+   73 0000003C 48CD            LDR              R0, =P5OUT
    74 0000003E 7801            LDRB             R1, [R0]
    75 00000040 F041 0107       ORR              R1, #7
    76 00000044 7001            STRB             R1, [R0]
@@ -125,7 +125,7 @@ ARM Macro Assembler    Page 2
    84 0000004C         ;-------------------------------------------------------
                        ------------------------
    85 0000004C         state0
-   86 0000004C F000 F831       BL               allOFF
+   86 0000004C F000 F94B       BL               allOFF
    87 00000050         
    88 00000050         ; to count up to 1
 
@@ -134,406 +134,448 @@ ARM Macro Assembler    Page 2
 ARM Macro Assembler    Page 3 
 
 
-   89 00000050 483C            LDR              r0, =P1IN
+   89 00000050 48C9            LDR              r0, =P1IN
    90 00000052 7801            LDRB             r1, [r0]
    91 00000054 F011 0F02       TST              r1, UPmask
    92 00000058 D00C            BEQ              state1
    93 0000005A         
-   94 0000005A F000 F83A       BL               displayA
-   95 0000005E F000 F83E       BL               displayB
-   96 00000062 F000 F842       BL               displayC
-   97 00000066 F000 F846       BL               displayD
-   98 0000006A F000 F84A       BL               displayE
-   99 0000006E F000 F84E       BL               displayF
+   94 0000005A F000 F954       BL               displayA
+   95 0000005E F000 F958       BL               displayB
+   96 00000062 F000 F95C       BL               displayC
+   97 00000066 F000 F960       BL               displayD
+   98 0000006A F000 F964       BL               displayE
+   99 0000006E F000 F968       BL               displayF
   100 00000072         
   101 00000072 E7EB            B                state0
   102 00000074         ;-------------------------------------------------------
                        ------------------------
   103 00000074         state1
-  104 00000074 4834            LDR              R0, =300000
-  105 00000076 F000 F819       BL               delayMs
+  104 00000074 48C1            LDR              R0, =150000
+  105 00000076 F000 F933       BL               delayMs
   106 0000007A         
-  107 0000007A F000 F81A       BL               allOFF
+  107 0000007A F000 F934       BL               allOFF
   108 0000007E         
   109 0000007E         ; to count up to 2
-  110 0000007E 4831            LDR              r0, =P1IN
+  110 0000007E 48BE            LDR              r0, =P1IN
   111 00000080 7801            LDRB             r1, [r0]
   112 00000082 F011 0F02       TST              r1, UPmask
   113 00000086 D004            BEQ              state2
   114 00000088         
-  115 00000088 F000 F829       BL               displayB
-  116 0000008C F000 F82D       BL               displayC
+  115 00000088 F000 F943       BL               displayB
+  116 0000008C F000 F947       BL               displayC
   117 00000090         
   118 00000090 E7F0            B                state1
   119 00000092         ;-------------------------------------------------------
                        ------------------------
   120 00000092         state2
-  121 00000092 F000 F80E       BL               allOFF
-  122 00000096         
-  123 00000096         ; ; to count up to 3
-  124 00000096         ; LDR r0, =P1IN
-  125 00000096         ; LDRB r1, [r0]
-  126 00000096         ; TST r1, UPmask
-  127 00000096         ; BEQ state3
-  128 00000096         
-  129 00000096 F000 F81C       BL               displayA
-  130 0000009A F000 F820       BL               displayB
-  131 0000009E F000 F82A       BL               displayD
-  132 000000A2 F000 F82E       BL               displayE
-  133 000000A6 F000 F838       BL               displayG
-  134 000000AA         
-  135 000000AA E7F2            B                state2
-  136 000000AC         ;-------------------------------------------------------
+  121 00000092 48BA            LDR              R0, =150000
+  122 00000094 F000 F924       BL               delayMs
+  123 00000098         
+  124 00000098 F000 F925       BL               allOFF
+  125 0000009C         
+  126 0000009C         ; to count up to 3
+  127 0000009C 48B6            LDR              r0, =P1IN
+  128 0000009E 7801            LDRB             r1, [r0]
+  129 000000A0 F011 0F02       TST              r1, UPmask
+  130 000000A4 D00A            BEQ              state3
+  131 000000A6         
+  132 000000A6 F000 F92E       BL               displayA
+  133 000000AA F000 F932       BL               displayB
+  134 000000AE F000 F93C       BL               displayD
+  135 000000B2 F000 F940       BL               displayE
+  136 000000B6 F000 F94A       BL               displayG
+  137 000000BA         
+  138 000000BA E7EA            B                state2
+  139 000000BC         ;-------------------------------------------------------
                        ------------------------
-  137 000000AC         ;state3
-  138 000000AC         ; BL allOFF
-  139 000000AC         ; 
-  140 000000AC         ; ; to count up to 4
-  141 000000AC         ; LDR r0, =P1IN
-  142 000000AC         ; LDRB r1, [r0]
-  143 000000AC         ; TST r1, UPmask
-  144 000000AC         ; BEQ state4
+  140 000000BC         state3
+  141 000000BC 48AF            LDR              R0, =150000
+  142 000000BE F000 F90F       BL               delayMs
+  143 000000C2         
+  144 000000C2 F000 F910       BL               allOFF
 
 
 
 ARM Macro Assembler    Page 4 
 
 
-  145 000000AC         
-  146 000000AC         ; BL displayA
-  147 000000AC         ; BL displayB
-  148 000000AC         ; BL displayC
-  149 000000AC         ; BL displayD
-  150 000000AC         ; BL displayG
-  151 000000AC         ; 
-  152 000000AC         ; B state3
-  153 000000AC         ;;------------------------------------------------------
-                       -------------------------
-  154 000000AC         ;state4
-  155 000000AC         ; BL allOFF
-  156 000000AC         ; 
-  157 000000AC         ; ; to count up to 5
-  158 000000AC         ; LDR r0, =P1IN
-  159 000000AC         ; LDRB r1, [r0]
-  160 000000AC         ; TST r1, UPmask
-  161 000000AC         ; BEQ state5
-  162 000000AC         ; 
-  163 000000AC         ; BL displayB
-  164 000000AC         ; BL displayC
-  165 000000AC         ; BL displayF
-  166 000000AC         ; BL displayG
-  167 000000AC         
-  168 000000AC         ; B state4
-  169 000000AC         ;;------------------------------------------------------
-                       -------------------------
-  170 000000AC         ;state5
-  171 000000AC         ; BL allOFF
-  172 000000AC         ; 
-  173 000000AC         ; ; to count up to 6
-  174 000000AC         ; LDR r0, =P1IN
-  175 000000AC         ; LDRB r1, [r0]
-  176 000000AC         ; TST r1, UPmask
-  177 000000AC         ; BEQ state6
-  178 000000AC         
-  179 000000AC         ; BL displayA
-  180 000000AC         ; BL displayC
-  181 000000AC         ; BL displayD
-  182 000000AC         ; BL displayF
-  183 000000AC         ; BL displayG
-  184 000000AC         ; 
-  185 000000AC         ; B state5
-  186 000000AC         ;;------------------------------------------------------
-                       -------------------------
-  187 000000AC         ;state6
-  188 000000AC         ; BL allOFF
-  189 000000AC         ; 
-  190 000000AC         ; ; to count up to 7
-  191 000000AC         ; LDR r0, =P1IN
-  192 000000AC         ; LDRB r1, [r0]
-  193 000000AC         ; TST r1, UPmask
-  194 000000AC         ; BEQ state7
-  195 000000AC         ; 
-  196 000000AC         ; BL displayA
-  197 000000AC         ; BL displayC
-  198 000000AC         ; BL displayD
-  199 000000AC         ; BL displayE
-  200 000000AC         ; BL displayF
+  145 000000C6         
+  146 000000C6         ; to count up to 4
+  147 000000C6 48AC            LDR              r0, =P1IN
+  148 000000C8 7801            LDRB             r1, [r0]
+  149 000000CA F011 0F02       TST              r1, UPmask
+  150 000000CE D00A            BEQ              state4
+  151 000000D0         
+  152 000000D0 F000 F919       BL               displayA
+  153 000000D4 F000 F91D       BL               displayB
+  154 000000D8 F000 F921       BL               displayC
+  155 000000DC F000 F925       BL               displayD
+  156 000000E0 F000 F935       BL               displayG
+  157 000000E4         
+  158 000000E4 E7EA            B                state3
+  159 000000E6         ;-------------------------------------------------------
+                       ------------------------
+  160 000000E6         state4
+  161 000000E6 48A5            LDR              R0, =150000
+  162 000000E8 F000 F8FA       BL               delayMs
+  163 000000EC         
+  164 000000EC F000 F8FB       BL               allOFF
+  165 000000F0         
+  166 000000F0         ; to count up to 5
+  167 000000F0 48A1            LDR              r0, =P1IN
+  168 000000F2 7801            LDRB             r1, [r0]
+  169 000000F4 F011 0F02       TST              r1, UPmask
+  170 000000F8 D008            BEQ              state5
+  171 000000FA         
+  172 000000FA F000 F90A       BL               displayB
+  173 000000FE F000 F90E       BL               displayC
+  174 00000102 F000 F91E       BL               displayF
+  175 00000106 F000 F922       BL               displayG
+  176 0000010A         
+  177 0000010A E7EC            B                state4
+  178 0000010C         ;-------------------------------------------------------
+                       ------------------------
+  179 0000010C         state5
+  180 0000010C 489B            LDR              R0, =150000
+  181 0000010E F000 F8E7       BL               delayMs
+  182 00000112         
+  183 00000112 F000 F8E8       BL               allOFF
+  184 00000116         
+  185 00000116         ; to count up to 6
+  186 00000116 4898            LDR              r0, =P1IN
+  187 00000118 7801            LDRB             r1, [r0]
+  188 0000011A F011 0F02       TST              r1, UPmask
+  189 0000011E D00A            BEQ              state6
+  190 00000120         
+  191 00000120 F000 F8F1       BL               displayA
+  192 00000124 F000 F8FB       BL               displayC
+  193 00000128 F000 F8FF       BL               displayD
+  194 0000012C F000 F909       BL               displayF
+  195 00000130 F000 F90D       BL               displayG
+  196 00000134         
+  197 00000134 E7EA            B                state5
+  198 00000136         ;-------------------------------------------------------
+                       ------------------------
+  199 00000136         state6
+  200 00000136 4891            LDR              R0, =150000
 
 
 
 ARM Macro Assembler    Page 5 
 
 
-  201 000000AC         ; BL displayG
-  202 000000AC         ; 
-  203 000000AC         ; B state6
-  204 000000AC         ;;------------------------------------------------------
-                       -------------------------
-  205 000000AC         ;state7
-  206 000000AC         ; BL allOFF
-  207 000000AC         ; 
-  208 000000AC         ; ; to count up to 8
-  209 000000AC         ; LDR r0, =P1IN
-  210 000000AC         ; LDRB r1, [r0]
-  211 000000AC         ; TST r1, UPmask
-  212 000000AC         ; BEQ state8
-  213 000000AC         ; 
-  214 000000AC         ; BL displayA
-  215 000000AC         ; BL displayB
-  216 000000AC         ; BL displayC
-  217 000000AC         ; 
-  218 000000AC         ; B state7
-  219 000000AC         ;;------------------------------------------------------
-                       -------------------------
-  220 000000AC         ;state8
-  221 000000AC         ; BL allOFF
-  222 000000AC         ; 
-  223 000000AC         ; ; to count up to 9
-  224 000000AC         ; LDR r0, =P1IN
-  225 000000AC         ; LDRB r1, [r0]
-  226 000000AC         ; TST r1, UPmask
-  227 000000AC         ; BEQ state9
-  228 000000AC         
-  229 000000AC         ; BL displayA
-  230 000000AC         ; BL displayB
-  231 000000AC         ; BL displayC
-  232 000000AC         ; BL displayD
-  233 000000AC         ; BL displayE
-  234 000000AC         ; BL displayF
-  235 000000AC         ; BL displayG
-  236 000000AC         ; 
-  237 000000AC         ; B state8
-  238 000000AC         ;;------------------------------------------------------
-                       -------------------------
-  239 000000AC         ;state9
-  240 000000AC         ; BL allOFF
-  241 000000AC         ; 
-  242 000000AC         ; ; to count up to A
-  243 000000AC         ; LDR r0, =P1IN
-  244 000000AC         ; LDRB r1, [r0]
-  245 000000AC         ; TST r1, UPmask
-  246 000000AC         ; BEQ stateA
-  247 000000AC         
-  248 000000AC         ; BL displayA
-  249 000000AC         ; BL displayB
-  250 000000AC         ; BL displayC
-  251 000000AC         ; BL displayD
-  252 000000AC         ; BL displayF
-  253 000000AC         ; BL displayG
-  254 000000AC         ; 
-  255 000000AC         ; B state9
-  256 000000AC         ;;------------------------------------------------------
+  201 00000138 F000 F8D2       BL               delayMs
+  202 0000013C         
+  203 0000013C F000 F8D3       BL               allOFF
+  204 00000140         
+  205 00000140         ; to count up to 7
+  206 00000140 488D            LDR              r0, =P1IN
+  207 00000142 7801            LDRB             r1, [r0]
+  208 00000144 F011 0F02       TST              r1, UPmask
+  209 00000148 D00C            BEQ              state7
+  210 0000014A         
+  211 0000014A F000 F8DC       BL               displayA
+  212 0000014E F000 F8E6       BL               displayC
+  213 00000152 F000 F8EA       BL               displayD
+  214 00000156 F000 F8EE       BL               displayE
+  215 0000015A F000 F8F2       BL               displayF
+  216 0000015E F000 F8F6       BL               displayG
+  217 00000162         
+  218 00000162 E7E8            B                state6
+  219 00000164         ;-------------------------------------------------------
+                       ------------------------
+  220 00000164         state7
+  221 00000164 4885            LDR              R0, =150000
+  222 00000166 F000 F8BB       BL               delayMs
+  223 0000016A         
+  224 0000016A F000 F8BC       BL               allOFF
+  225 0000016E         
+  226 0000016E         ; to count up to 8
+  227 0000016E 4882            LDR              r0, =P1IN
+  228 00000170 7801            LDRB             r1, [r0]
+  229 00000172 F011 0F02       TST              r1, UPmask
+  230 00000176 D006            BEQ              state8
+  231 00000178         
+  232 00000178 F000 F8C5       BL               displayA
+  233 0000017C F000 F8C9       BL               displayB
+  234 00000180 F000 F8CD       BL               displayC
+  235 00000184         
+  236 00000184 E7EE            B                state7
+  237 00000186         ;-------------------------------------------------------
+                       ------------------------
+  238 00000186         state8
+  239 00000186 487D            LDR              R0, =150000
+  240 00000188 F000 F8AA       BL               delayMs
+  241 0000018C         
+  242 0000018C F000 F8AB       BL               allOFF
+  243 00000190         
+  244 00000190         ; to count up to 9
+  245 00000190 4879            LDR              r0, =P1IN
+  246 00000192 7801            LDRB             r1, [r0]
+  247 00000194 F011 0F02       TST              r1, UPmask
+  248 00000198 D00E            BEQ              state9
+  249 0000019A         
+  250 0000019A F000 F8B4       BL               displayA
+  251 0000019E F000 F8B8       BL               displayB
+  252 000001A2 F000 F8BC       BL               displayC
+  253 000001A6 F000 F8C0       BL               displayD
+  254 000001AA F000 F8C4       BL               displayE
+  255 000001AE F000 F8C8       BL               displayF
+  256 000001B2 F000 F8CC       BL               displayG
+  257 000001B6         
 
 
 
 ARM Macro Assembler    Page 6 
 
 
-                       ------------------------- 
-  257 000000AC         ;stateA
-  258 000000AC         ; BL allOFF
-  259 000000AC         ; 
-  260 000000AC         ; ; to count up to B
-  261 000000AC         ; LDR r0, =P1IN
-  262 000000AC         ; LDRB r1, [r0]
-  263 000000AC         ; TST r1, UPmask
-  264 000000AC         ; BEQ stateB
-  265 000000AC         ; 
-  266 000000AC         ; BL displayA
-  267 000000AC         ; BL displayB
-  268 000000AC         ; BL displayC
-  269 000000AC         ; BL displayE
-  270 000000AC         ; BL displayF
-  271 000000AC         ; BL displayG
-  272 000000AC         ; 
-  273 000000AC         ; B stateA
-  274 000000AC         ;;------------------------------------------------------
-                       -------------------------
-  275 000000AC         ;stateB
-  276 000000AC         ; BL allOFF
-  277 000000AC         ; 
-  278 000000AC         ; ; to count up to C
-  279 000000AC         ; LDR r0, =P1IN
-  280 000000AC         ; LDRB r1, [r0]
-  281 000000AC         ; TST r1, UPmask
-  282 000000AC         ; BEQ stateC
-  283 000000AC         ; 
-  284 000000AC         ; BL displayC
-  285 000000AC         ; BL displayD
-  286 000000AC         ; BL displayE
-  287 000000AC         ; BL displayF
-  288 000000AC         ; BL displayG
-  289 000000AC         ; 
-  290 000000AC         ; B stateB
-  291 000000AC         ;;------------------------------------------------------
-                       -------------------------
-  292 000000AC         ;stateC
-  293 000000AC         ; BL allOFF
-  294 000000AC         ; 
-  295 000000AC         ; ; to count up to D
-  296 000000AC         ; LDR r0, =P1IN
-  297 000000AC         ; LDRB r1, [r0]
-  298 000000AC         ; TST r1, UPmask
-  299 000000AC         ; BEQ stateD
-  300 000000AC         ; 
-  301 000000AC         ; BL displayA
-  302 000000AC         ; BL displayD
-  303 000000AC         ; BL displayE
-  304 000000AC         ; BL displayF
-  305 000000AC         ; 
-  306 000000AC         ; B stateC
-  307 000000AC         ;;------------------------------------------------------
-                       -------------------------
-  308 000000AC         ;stateD
-  309 000000AC         ; BL allOFF
-  310 000000AC         ; 
-  311 000000AC         ; ; to count up to E
+  258 000001B6 E7E6            B                state8
+  259 000001B8         ;-------------------------------------------------------
+                       ------------------------
+  260 000001B8         state9
+  261 000001B8 4870            LDR              R0, =150000
+  262 000001BA F000 F891       BL               delayMs
+  263 000001BE         
+  264 000001BE F000 F892       BL               allOFF
+  265 000001C2         
+  266 000001C2         ; to count up to A
+  267 000001C2 486D            LDR              r0, =P1IN
+  268 000001C4 7801            LDRB             r1, [r0]
+  269 000001C6 F011 0F02       TST              r1, UPmask
+  270 000001CA D00C            BEQ              stateA
+  271 000001CC         
+  272 000001CC F000 F89B       BL               displayA
+  273 000001D0 F000 F89F       BL               displayB
+  274 000001D4 F000 F8A3       BL               displayC
+  275 000001D8 F000 F8A7       BL               displayD
+  276 000001DC F000 F8B1       BL               displayF
+  277 000001E0 F000 F8B5       BL               displayG
+  278 000001E4         
+  279 000001E4 E7E8            B                state9
+  280 000001E6         ;-------------------------------------------------------
+                       ------------------------ 
+  281 000001E6         stateA
+  282 000001E6 4865            LDR              R0, =150000
+  283 000001E8 F000 F87A       BL               delayMs
+  284 000001EC         
+  285 000001EC F000 F87B       BL               allOFF
+  286 000001F0         
+  287 000001F0         ; to count up to B
+  288 000001F0 4861            LDR              r0, =P1IN
+  289 000001F2 7801            LDRB             r1, [r0]
+  290 000001F4 F011 0F02       TST              r1, UPmask
+  291 000001F8 D00C            BEQ              stateB
+  292 000001FA         
+  293 000001FA F000 F884       BL               displayA
+  294 000001FE F000 F888       BL               displayB
+  295 00000202 F000 F88C       BL               displayC
+  296 00000206 F000 F896       BL               displayE
+  297 0000020A F000 F89A       BL               displayF
+  298 0000020E F000 F89E       BL               displayG
+  299 00000212         
+  300 00000212 E7E8            B                stateA
+  301 00000214         ;-------------------------------------------------------
+                       ------------------------
+  302 00000214         stateB
+  303 00000214 4859            LDR              R0, =150000
+  304 00000216 F000 F863       BL               delayMs
+  305 0000021A         
+  306 0000021A F000 F864       BL               allOFF
+  307 0000021E         
+  308 0000021E         ; to count up to C
+  309 0000021E 4856            LDR              r0, =P1IN
+  310 00000220 7801            LDRB             r1, [r0]
+  311 00000222 F011 0F02       TST              r1, UPmask
+  312 00000226 D00A            BEQ              stateC
+  313 00000228         
 
 
 
 ARM Macro Assembler    Page 7 
 
 
-  312 000000AC         ; LDR r0, =P1IN
-  313 000000AC         ; LDRB r1, [r0]
-  314 000000AC         ; TST r1, UPmask
-  315 000000AC         ; BEQ stateE
-  316 000000AC         
-  317 000000AC         ; BL displayB
-  318 000000AC         ; BL displayC
-  319 000000AC         ; BL displayD
-  320 000000AC         ; BL displayE
-  321 000000AC         ; BL displayG
-  322 000000AC         ; 
-  323 000000AC         ; B stateD
-  324 000000AC         ;;------------------------------------------------------
-                       ------------------------- 
-  325 000000AC         ;stateE
-  326 000000AC         ; BL allOFF
-  327 000000AC         ; 
-  328 000000AC         ; ; to count up to F
-  329 000000AC         ; LDR r0, =P1IN
-  330 000000AC         ; LDRB r1, [r0]
-  331 000000AC         ; TST r1, UPmask
-  332 000000AC         ; BEQ stateF
-  333 000000AC         
-  334 000000AC         ; BL displayA
-  335 000000AC         ; BL displayD
-  336 000000AC         ; BL displayE
-  337 000000AC         ; BL displayF
-  338 000000AC         ; BL displayG
-  339 000000AC         ; 
-  340 000000AC         ; B stateE
-  341 000000AC         ;;------------------------------------------------------
-                       -------------------------
-  342 000000AC         ;stateF
-  343 000000AC         ; BL allOFF
-  344 000000AC         ; 
-  345 000000AC         ; ; if count up button pressed, roll over to 0
-  346 000000AC         ; LDR r0, =P1IN
-  347 000000AC         ; LDRB r1, [r0]
-  348 000000AC         ; TST r1, UPmask
-  349 000000AC         ; BEQ state0
-  350 000000AC         
-  351 000000AC         ; BL displayA
-  352 000000AC         ; BL displayE
-  353 000000AC         ; BL displayF
-  354 000000AC         ; BL displayG
-  355 000000AC         ; 
-  356 000000AC         ; B stateF
-  357 000000AC         ; ------------------------------------------------------
+  314 00000228 F000 F879       BL               displayC
+  315 0000022C F000 F87D       BL               displayD
+  316 00000230 F000 F881       BL               displayE
+  317 00000234 F000 F885       BL               displayF
+  318 00000238 F000 F889       BL               displayG
+  319 0000023C         
+  320 0000023C E7EA            B                stateB
+  321 0000023E         ;-------------------------------------------------------
                        ------------------------
-  358 000000AC         
-  359 000000AC         ; SUBROUTINES - these control which segment to light up
-  360 000000AC         ; ------------------------------------------------------
+  322 0000023E         stateC
+  323 0000023E 484F            LDR              R0, =150000
+  324 00000240 F000 F84E       BL               delayMs
+  325 00000244         
+  326 00000244 F000 F84F       BL               allOFF
+  327 00000248         
+  328 00000248         ; to count up to D
+  329 00000248 484B            LDR              r0, =P1IN
+  330 0000024A 7801            LDRB             r1, [r0]
+  331 0000024C F011 0F02       TST              r1, UPmask
+  332 00000250 D008            BEQ              stateD
+  333 00000252         
+  334 00000252 F000 F858       BL               displayA
+  335 00000256 F000 F868       BL               displayD
+  336 0000025A F000 F86C       BL               displayE
+  337 0000025E F000 F870       BL               displayF
+  338 00000262         
+  339 00000262 E7EC            B                stateC
+  340 00000264         ;-------------------------------------------------------
                        ------------------------
-  361 000000AC         delayMs
-  362 000000AC         
-  363 000000AC 3801    L1      SUBS             R0, #1      ; inner loop
-  364 000000AE D1FD            BNE              L1
-  365 000000B0 4770            BX               LR
-  366 000000B2         
+  341 00000264         stateD
+  342 00000264 4845            LDR              R0, =150000
+  343 00000266 F000 F83B       BL               delayMs
+  344 0000026A         
+  345 0000026A F000 F83C       BL               allOFF
+  346 0000026E         
+  347 0000026E         ; to count up to E
+  348 0000026E 4842            LDR              r0, =P1IN
+  349 00000270 7801            LDRB             r1, [r0]
+  350 00000272 F011 0F02       TST              r1, UPmask
+  351 00000276 D00A            BEQ              stateE
+  352 00000278         
+  353 00000278 F000 F84B       BL               displayB
+  354 0000027C F000 F84F       BL               displayC
+  355 00000280 F000 F853       BL               displayD
+  356 00000284 F000 F857       BL               displayE
+  357 00000288 F000 F861       BL               displayG
+  358 0000028C         
+  359 0000028C E7EA            B                stateD
+  360 0000028E         ;-------------------------------------------------------
+                       ------------------------ 
+  361 0000028E         stateE
+  362 0000028E 483B            LDR              R0, =150000
+  363 00000290 F000 F826       BL               delayMs
+  364 00000294         
+  365 00000294 F000 F827       BL               allOFF
+  366 00000298         
+  367 00000298         ; to count up to F
+  368 00000298 4837            LDR              r0, =P1IN
+  369 0000029A 7801            LDRB             r1, [r0]
 
 
 
 ARM Macro Assembler    Page 8 
 
 
-  367 000000B2         allOFF                               ; turn all segments
+  370 0000029C F011 0F02       TST              r1, UPmask
+  371 000002A0 D00A            BEQ              stateF
+  372 000002A2         
+  373 000002A2 F000 F830       BL               displayA
+  374 000002A6 F000 F840       BL               displayD
+  375 000002AA F000 F844       BL               displayE
+  376 000002AE F000 F848       BL               displayF
+  377 000002B2 F000 F84C       BL               displayG
+  378 000002B6         
+  379 000002B6 E7EA            B                stateE
+  380 000002B8         ;-------------------------------------------------------
+                       ------------------------
+  381 000002B8         stateF
+  382 000002B8 4830            LDR              R0, =150000
+  383 000002BA F000 F811       BL               delayMs
+  384 000002BE         
+  385 000002BE F000 F812       BL               allOFF
+  386 000002C2         
+  387 000002C2         ; if count up button pressed, roll over to 0
+  388 000002C2 482D            LDR              r0, =P1IN
+  389 000002C4 7801            LDRB             r1, [r0]
+  390 000002C6 F011 0F02       TST              r1, UPmask
+  391 000002CA F43F AEBF       BEQ              state0
+  392 000002CE         
+  393 000002CE F000 F81A       BL               displayA
+  394 000002D2 F000 F830       BL               displayE
+  395 000002D6 F000 F834       BL               displayF
+  396 000002DA F000 F838       BL               displayG
+  397 000002DE         
+  398 000002DE E7EB            B                stateF
+  399 000002E0         ; ------------------------------------------------------
+                       ------------------------
+  400 000002E0         
+  401 000002E0         ; SUBROUTINES - these control which segment to light up
+  402 000002E0         ; ------------------------------------------------------
+                       ------------------------
+  403 000002E0         delayMs
+  404 000002E0         
+  405 000002E0 3801    L1      SUBS             R0, #1      ; inner loop
+  406 000002E2 D1FD            BNE              L1
+  407 000002E4 4770            BX               LR
+  408 000002E6         
+  409 000002E6         allOFF                               ; turn all segments
                                                              off
-  368 000000B2 4821            LDR              R0, =P2OUT
-  369 000000B4 7801            LDRB             R1, [R0]
-  370 000000B6 F041 0108       ORR              R1, segB_mask
-  371 000000BA 7001            STRB             R1, [R0]
-  372 000000BC         
-  373 000000BC 481F            LDR              R0, =P3OUT
-  374 000000BE 7801            LDRB             R1, [R0]
-  375 000000C0 F041 01E0       ORR              R1, #224
-  376 000000C4 7001            STRB             R1, [R0]
-  377 000000C6         
-  378 000000C6 481E            LDR              R0, =P5OUT
-  379 000000C8 7801            LDRB             R1, [R0]
-  380 000000CA F041 0107       ORR              R1, #7
-  381 000000CE 7001            STRB             R1, [R0]
-  382 000000D0         
-  383 000000D0 4770            BX               LR
-  384 000000D2         
-  385 000000D2         displayA                             ; turn on port 3.6
-  386 000000D2 481A            LDR              R0, =P3OUT
-  387 000000D4 7801            LDRB             R1, [R0]
-  388 000000D6 F021 0140       BIC              R1, segA_mask
-  389 000000DA 7001            STRB             R1, [R0]
-  390 000000DC 4770            BX               LR
-  391 000000DE         
-  392 000000DE         displayB                             ; turn on port 2.3
-  393 000000DE 4816            LDR              R0, =P2OUT
-  394 000000E0 7801            LDRB             R1, [R0]
-  395 000000E2 F021 0108       BIC              R1, segB_mask
-  396 000000E6 7001            STRB             R1, [R0]
-  397 000000E8 4770            BX               LR
-  398 000000EA         
-  399 000000EA         displayC                             ; turn on port 3.7
-  400 000000EA 4814            LDR              R0, =P3OUT
-  401 000000EC 7801            LDRB             R1, [R0]
-  402 000000EE F021 0180       BIC              R1, segC_mask
-  403 000000F2 7001            STRB             R1, [R0]
-  404 000000F4 4770            BX               LR
-  405 000000F6         
-  406 000000F6         displayD                             ; turn on port 3.5
-  407 000000F6 4811            LDR              R0, =P3OUT
-  408 000000F8 7801            LDRB             R1, [R0]
-  409 000000FA F021 0120       BIC              R1, segD_mask
-  410 000000FE 7001            STRB             R1, [R0]
-  411 00000100 4770            BX               LR
-  412 00000102         
-  413 00000102         displayE                             ; turn on port 5.1
-  414 00000102 480F            LDR              R0, =P5OUT
-  415 00000104 7801            LDRB             R1, [R0]
-  416 00000106 F021 0102       BIC              R1, segE_mask
-  417 0000010A 7001            STRB             R1, [R0]
-  418 0000010C 4770            BX               LR
-  419 0000010E         
-  420 0000010E         displayF                             ; turn on port 5.2
-  421 0000010E 480C            LDR              R0, =P5OUT
-  422 00000110 7801            LDRB             R1, [R0]
-  423 00000112 F021 0104       BIC              R1, segF_mask
-  424 00000116 7001            STRB             R1, [R0]
+  410 000002E6 4821            LDR              R0, =P2OUT
+  411 000002E8 7801            LDRB             R1, [R0]
+  412 000002EA F041 0108       ORR              R1, segB_mask
+  413 000002EE 7001            STRB             R1, [R0]
+  414 000002F0         
+  415 000002F0 481F            LDR              R0, =P3OUT
+  416 000002F2 7801            LDRB             R1, [R0]
+  417 000002F4 F041 01E0       ORR              R1, #224
+  418 000002F8 7001            STRB             R1, [R0]
+  419 000002FA         
+  420 000002FA 481E            LDR              R0, =P5OUT
+  421 000002FC 7801            LDRB             R1, [R0]
+  422 000002FE F041 0107       ORR              R1, #7
+  423 00000302 7001            STRB             R1, [R0]
+  424 00000304         
 
 
 
 ARM Macro Assembler    Page 9 
 
 
-  425 00000118 4770            BX               LR
-  426 0000011A         
-  427 0000011A         displayG                             ; turn on port 5.0
-  428 0000011A 4809            LDR              R0, =P5OUT
-  429 0000011C 7801            LDRB             R1, [R0]
-  430 0000011E F021 0101       BIC              R1, segG_mask
-  431 00000122 7001            STRB             R1, [R0]
-  432 00000124 4770            BX               LR
-  433 00000126         
-  434 00000126                 END
+  425 00000304 4770            BX               LR
+  426 00000306         
+  427 00000306         displayA                             ; turn on port 3.6
+  428 00000306 481A            LDR              R0, =P3OUT
+  429 00000308 7801            LDRB             R1, [R0]
+  430 0000030A F021 0140       BIC              R1, segA_mask
+  431 0000030E 7001            STRB             R1, [R0]
+  432 00000310 4770            BX               LR
+  433 00000312         
+  434 00000312         displayB                             ; turn on port 2.3
+  435 00000312 4816            LDR              R0, =P2OUT
+  436 00000314 7801            LDRB             R1, [R0]
+  437 00000316 F021 0108       BIC              R1, segB_mask
+  438 0000031A 7001            STRB             R1, [R0]
+  439 0000031C 4770            BX               LR
+  440 0000031E         
+  441 0000031E         displayC                             ; turn on port 3.7
+  442 0000031E 4814            LDR              R0, =P3OUT
+  443 00000320 7801            LDRB             R1, [R0]
+  444 00000322 F021 0180       BIC              R1, segC_mask
+  445 00000326 7001            STRB             R1, [R0]
+  446 00000328 4770            BX               LR
+  447 0000032A         
+  448 0000032A         displayD                             ; turn on port 3.5
+  449 0000032A 4811            LDR              R0, =P3OUT
+  450 0000032C 7801            LDRB             R1, [R0]
+  451 0000032E F021 0120       BIC              R1, segD_mask
+  452 00000332 7001            STRB             R1, [R0]
+  453 00000334 4770            BX               LR
+  454 00000336         
+  455 00000336         displayE                             ; turn on port 5.1
+  456 00000336 480F            LDR              R0, =P5OUT
+  457 00000338 7801            LDRB             R1, [R0]
+  458 0000033A F021 0102       BIC              R1, segE_mask
+  459 0000033E 7001            STRB             R1, [R0]
+  460 00000340 4770            BX               LR
+  461 00000342         
+  462 00000342         displayF                             ; turn on port 5.2
+  463 00000342 480C            LDR              R0, =P5OUT
+  464 00000344 7801            LDRB             R1, [R0]
+  465 00000346 F021 0104       BIC              R1, segF_mask
+  466 0000034A 7001            STRB             R1, [R0]
+  467 0000034C 4770            BX               LR
+  468 0000034E         
+  469 0000034E         displayG                             ; turn on port 5.0
+  470 0000034E 4809            LDR              R0, =P5OUT
+  471 00000350 7801            LDRB             R1, [R0]
+  472 00000352 F021 0101       BIC              R1, segG_mask
+  473 00000356 7001            STRB             R1, [R0]
+  474 00000358 4770            BX               LR
+  475 0000035A         
+  476 0000035A                 END
               00 00 40004C05 
               40004C04 
               40004C24 
@@ -541,8 +583,14 @@ ARM Macro Assembler    Page 9
               40004C03 
               40004C22 
               40004C42 
+
+
+
+ARM Macro Assembler    Page 10 
+
+
               40004C00 
-              000493E0 
+              000249F0 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
 erwork --depend=.\objects\asm_main.d -o.\objects\asm_main.o -I.\RTE\_Target_1 -
 IE:\Users\Fowad\AppData\Local\Arm\Packs\ARM\CMSIS\5.5.1\CMSIS\Core\Include -IE:
@@ -564,23 +612,36 @@ Symbol: .text
    Uses
       None
 Comment: .text unused
-L1 000000AC
+L1 000002E0
 
 Symbol: L1
    Definitions
-      At line 363 in file asm_main.s
+      At line 405 in file asm_main.s
    Uses
-      At line 364 in file asm_main.s
+      At line 406 in file asm_main.s
 Comment: L1 used once
-allOFF 000000B2
+allOFF 000002E6
 
 Symbol: allOFF
    Definitions
-      At line 367 in file asm_main.s
+      At line 409 in file asm_main.s
    Uses
       At line 86 in file asm_main.s
       At line 107 in file asm_main.s
-      At line 121 in file asm_main.s
+      At line 124 in file asm_main.s
+      At line 144 in file asm_main.s
+      At line 164 in file asm_main.s
+      At line 183 in file asm_main.s
+      At line 203 in file asm_main.s
+      At line 224 in file asm_main.s
+      At line 242 in file asm_main.s
+      At line 264 in file asm_main.s
+      At line 285 in file asm_main.s
+      At line 306 in file asm_main.s
+      At line 326 in file asm_main.s
+      At line 345 in file asm_main.s
+      At line 365 in file asm_main.s
+      At line 385 in file asm_main.s
 
 asm_main 00000000
 
@@ -590,82 +651,173 @@ Symbol: asm_main
    Uses
       At line 39 in file asm_main.s
 Comment: asm_main used once
-delayMs 000000AC
+delayMs 000002E0
 
 Symbol: delayMs
    Definitions
-      At line 361 in file asm_main.s
+      At line 403 in file asm_main.s
    Uses
       At line 105 in file asm_main.s
-Comment: delayMs used once
-displayA 000000D2
-
-Symbol: displayA
-   Definitions
-      At line 385 in file asm_main.s
-   Uses
-      At line 94 in file asm_main.s
-      At line 129 in file asm_main.s
-
-displayB 000000DE
-
-Symbol: displayB
-   Definitions
-      At line 392 in file asm_main.s
-   Uses
-      At line 95 in file asm_main.s
-      At line 115 in file asm_main.s
+      At line 122 in file asm_main.s
+      At line 142 in file asm_main.s
+      At line 162 in file asm_main.s
+      At line 181 in file asm_main.s
+      At line 201 in file asm_main.s
 
 
 
 ARM Macro Assembler    Page 2 Alphabetic symbol ordering
 Relocatable symbols
 
-      At line 130 in file asm_main.s
+      At line 222 in file asm_main.s
+      At line 240 in file asm_main.s
+      At line 262 in file asm_main.s
+      At line 283 in file asm_main.s
+      At line 304 in file asm_main.s
+      At line 324 in file asm_main.s
+      At line 343 in file asm_main.s
+      At line 363 in file asm_main.s
+      At line 383 in file asm_main.s
 
-displayC 000000EA
+displayA 00000306
 
-Symbol: displayC
-   Definitions
-      At line 399 in file asm_main.s
-   Uses
-      At line 96 in file asm_main.s
-      At line 116 in file asm_main.s
-
-displayD 000000F6
-
-Symbol: displayD
-   Definitions
-      At line 406 in file asm_main.s
-   Uses
-      At line 97 in file asm_main.s
-      At line 131 in file asm_main.s
-
-displayE 00000102
-
-Symbol: displayE
-   Definitions
-      At line 413 in file asm_main.s
-   Uses
-      At line 98 in file asm_main.s
-      At line 132 in file asm_main.s
-
-displayF 0000010E
-
-Symbol: displayF
-   Definitions
-      At line 420 in file asm_main.s
-   Uses
-      At line 99 in file asm_main.s
-Comment: displayF used once
-displayG 0000011A
-
-Symbol: displayG
+Symbol: displayA
    Definitions
       At line 427 in file asm_main.s
    Uses
+      At line 94 in file asm_main.s
+      At line 132 in file asm_main.s
+      At line 152 in file asm_main.s
+      At line 191 in file asm_main.s
+      At line 211 in file asm_main.s
+      At line 232 in file asm_main.s
+      At line 250 in file asm_main.s
+      At line 272 in file asm_main.s
+      At line 293 in file asm_main.s
+      At line 334 in file asm_main.s
+      At line 373 in file asm_main.s
+      At line 393 in file asm_main.s
+
+displayB 00000312
+
+Symbol: displayB
+   Definitions
+      At line 434 in file asm_main.s
+   Uses
+      At line 95 in file asm_main.s
+      At line 115 in file asm_main.s
       At line 133 in file asm_main.s
-Comment: displayG used once
+      At line 153 in file asm_main.s
+      At line 172 in file asm_main.s
+      At line 233 in file asm_main.s
+      At line 251 in file asm_main.s
+      At line 273 in file asm_main.s
+      At line 294 in file asm_main.s
+      At line 353 in file asm_main.s
+
+displayC 0000031E
+
+Symbol: displayC
+   Definitions
+      At line 441 in file asm_main.s
+   Uses
+      At line 96 in file asm_main.s
+      At line 116 in file asm_main.s
+      At line 154 in file asm_main.s
+      At line 173 in file asm_main.s
+      At line 192 in file asm_main.s
+      At line 212 in file asm_main.s
+      At line 234 in file asm_main.s
+
+
+
+ARM Macro Assembler    Page 3 Alphabetic symbol ordering
+Relocatable symbols
+
+      At line 252 in file asm_main.s
+      At line 274 in file asm_main.s
+      At line 295 in file asm_main.s
+      At line 314 in file asm_main.s
+      At line 354 in file asm_main.s
+
+displayD 0000032A
+
+Symbol: displayD
+   Definitions
+      At line 448 in file asm_main.s
+   Uses
+      At line 97 in file asm_main.s
+      At line 134 in file asm_main.s
+      At line 155 in file asm_main.s
+      At line 193 in file asm_main.s
+      At line 213 in file asm_main.s
+      At line 253 in file asm_main.s
+      At line 275 in file asm_main.s
+      At line 315 in file asm_main.s
+      At line 335 in file asm_main.s
+      At line 355 in file asm_main.s
+      At line 374 in file asm_main.s
+
+displayE 00000336
+
+Symbol: displayE
+   Definitions
+      At line 455 in file asm_main.s
+   Uses
+      At line 98 in file asm_main.s
+      At line 135 in file asm_main.s
+      At line 214 in file asm_main.s
+      At line 254 in file asm_main.s
+      At line 296 in file asm_main.s
+      At line 316 in file asm_main.s
+      At line 336 in file asm_main.s
+      At line 356 in file asm_main.s
+      At line 375 in file asm_main.s
+      At line 394 in file asm_main.s
+
+displayF 00000342
+
+Symbol: displayF
+   Definitions
+      At line 462 in file asm_main.s
+   Uses
+      At line 99 in file asm_main.s
+      At line 174 in file asm_main.s
+      At line 194 in file asm_main.s
+      At line 215 in file asm_main.s
+      At line 255 in file asm_main.s
+      At line 276 in file asm_main.s
+      At line 297 in file asm_main.s
+      At line 317 in file asm_main.s
+      At line 337 in file asm_main.s
+      At line 376 in file asm_main.s
+      At line 395 in file asm_main.s
+
+
+
+
+ARM Macro Assembler    Page 4 Alphabetic symbol ordering
+Relocatable symbols
+
+displayG 0000034E
+
+Symbol: displayG
+   Definitions
+      At line 469 in file asm_main.s
+   Uses
+      At line 136 in file asm_main.s
+      At line 156 in file asm_main.s
+      At line 175 in file asm_main.s
+      At line 195 in file asm_main.s
+      At line 216 in file asm_main.s
+      At line 256 in file asm_main.s
+      At line 277 in file asm_main.s
+      At line 298 in file asm_main.s
+      At line 318 in file asm_main.s
+      At line 357 in file asm_main.s
+      At line 377 in file asm_main.s
+      At line 396 in file asm_main.s
+
 loop 00000046
 
 Symbol: loop
@@ -680,14 +832,9 @@ Symbol: state0
    Definitions
       At line 85 in file asm_main.s
    Uses
-
-
-
-ARM Macro Assembler    Page 3 Alphabetic symbol ordering
-Relocatable symbols
-
       At line 79 in file asm_main.s
       At line 101 in file asm_main.s
+      At line 391 in file asm_main.s
 
 state1 00000074
 
@@ -705,9 +852,138 @@ Symbol: state2
       At line 120 in file asm_main.s
    Uses
       At line 113 in file asm_main.s
-      At line 135 in file asm_main.s
+      At line 138 in file asm_main.s
 
-16 symbols
+state3 000000BC
+
+Symbol: state3
+   Definitions
+
+
+
+ARM Macro Assembler    Page 5 Alphabetic symbol ordering
+Relocatable symbols
+
+      At line 140 in file asm_main.s
+   Uses
+      At line 130 in file asm_main.s
+      At line 158 in file asm_main.s
+
+state4 000000E6
+
+Symbol: state4
+   Definitions
+      At line 160 in file asm_main.s
+   Uses
+      At line 150 in file asm_main.s
+      At line 177 in file asm_main.s
+
+state5 0000010C
+
+Symbol: state5
+   Definitions
+      At line 179 in file asm_main.s
+   Uses
+      At line 170 in file asm_main.s
+      At line 197 in file asm_main.s
+
+state6 00000136
+
+Symbol: state6
+   Definitions
+      At line 199 in file asm_main.s
+   Uses
+      At line 189 in file asm_main.s
+      At line 218 in file asm_main.s
+
+state7 00000164
+
+Symbol: state7
+   Definitions
+      At line 220 in file asm_main.s
+   Uses
+      At line 209 in file asm_main.s
+      At line 236 in file asm_main.s
+
+state8 00000186
+
+Symbol: state8
+   Definitions
+      At line 238 in file asm_main.s
+   Uses
+      At line 230 in file asm_main.s
+      At line 258 in file asm_main.s
+
+state9 000001B8
+
+Symbol: state9
+   Definitions
+      At line 260 in file asm_main.s
+   Uses
+      At line 248 in file asm_main.s
+      At line 279 in file asm_main.s
+
+
+
+
+ARM Macro Assembler    Page 6 Alphabetic symbol ordering
+Relocatable symbols
+
+stateA 000001E6
+
+Symbol: stateA
+   Definitions
+      At line 281 in file asm_main.s
+   Uses
+      At line 270 in file asm_main.s
+      At line 300 in file asm_main.s
+
+stateB 00000214
+
+Symbol: stateB
+   Definitions
+      At line 302 in file asm_main.s
+   Uses
+      At line 291 in file asm_main.s
+      At line 320 in file asm_main.s
+
+stateC 0000023E
+
+Symbol: stateC
+   Definitions
+      At line 322 in file asm_main.s
+   Uses
+      At line 312 in file asm_main.s
+      At line 339 in file asm_main.s
+
+stateD 00000264
+
+Symbol: stateD
+   Definitions
+      At line 341 in file asm_main.s
+   Uses
+      At line 332 in file asm_main.s
+      At line 359 in file asm_main.s
+
+stateE 0000028E
+
+Symbol: stateE
+   Definitions
+      At line 361 in file asm_main.s
+   Uses
+      At line 351 in file asm_main.s
+      At line 379 in file asm_main.s
+
+stateF 000002B8
+
+Symbol: stateF
+   Definitions
+      At line 381 in file asm_main.s
+   Uses
+      At line 371 in file asm_main.s
+      At line 398 in file asm_main.s
+
+29 symbols
 
 
 
@@ -730,6 +1006,20 @@ Symbol: P1IN
    Uses
       At line 89 in file asm_main.s
       At line 110 in file asm_main.s
+      At line 127 in file asm_main.s
+      At line 147 in file asm_main.s
+      At line 167 in file asm_main.s
+      At line 186 in file asm_main.s
+      At line 206 in file asm_main.s
+      At line 227 in file asm_main.s
+      At line 245 in file asm_main.s
+      At line 267 in file asm_main.s
+      At line 288 in file asm_main.s
+      At line 309 in file asm_main.s
+      At line 329 in file asm_main.s
+      At line 348 in file asm_main.s
+      At line 368 in file asm_main.s
+      At line 388 in file asm_main.s
 
 P1OUT 40004C02
 
@@ -759,6 +1049,12 @@ P2IN 40004C01
 
 Symbol: P2IN
    Definitions
+
+
+
+ARM Macro Assembler    Page 2 Alphabetic symbol ordering
+Absolute symbols
+
       At line 15 in file asm_main.s
    Uses
       None
@@ -770,14 +1066,8 @@ Symbol: P2OUT
       At line 14 in file asm_main.s
    Uses
       At line 63 in file asm_main.s
-      At line 368 in file asm_main.s
-      At line 393 in file asm_main.s
-
-
-
-
-ARM Macro Assembler    Page 2 Alphabetic symbol ordering
-Absolute symbols
+      At line 410 in file asm_main.s
+      At line 435 in file asm_main.s
 
 P2REN 40004C07
 
@@ -802,10 +1092,10 @@ Symbol: P3OUT
       At line 17 in file asm_main.s
    Uses
       At line 68 in file asm_main.s
-      At line 373 in file asm_main.s
-      At line 386 in file asm_main.s
-      At line 400 in file asm_main.s
-      At line 407 in file asm_main.s
+      At line 415 in file asm_main.s
+      At line 428 in file asm_main.s
+      At line 442 in file asm_main.s
+      At line 449 in file asm_main.s
 
 P5DIR 40004C44
 
@@ -822,10 +1112,16 @@ Symbol: P5OUT
       At line 20 in file asm_main.s
    Uses
       At line 73 in file asm_main.s
-      At line 378 in file asm_main.s
-      At line 414 in file asm_main.s
-      At line 421 in file asm_main.s
-      At line 428 in file asm_main.s
+      At line 420 in file asm_main.s
+      At line 456 in file asm_main.s
+
+
+
+ARM Macro Assembler    Page 3 Alphabetic symbol ordering
+Absolute symbols
+
+      At line 463 in file asm_main.s
+      At line 470 in file asm_main.s
 
 UPmask 00000002
 
@@ -835,20 +1131,28 @@ Symbol: UPmask
    Uses
       At line 91 in file asm_main.s
       At line 112 in file asm_main.s
+      At line 129 in file asm_main.s
+      At line 149 in file asm_main.s
+      At line 169 in file asm_main.s
+      At line 188 in file asm_main.s
+      At line 208 in file asm_main.s
+      At line 229 in file asm_main.s
+      At line 247 in file asm_main.s
+      At line 269 in file asm_main.s
+      At line 290 in file asm_main.s
+      At line 311 in file asm_main.s
+      At line 331 in file asm_main.s
+      At line 350 in file asm_main.s
+      At line 370 in file asm_main.s
+      At line 390 in file asm_main.s
 
 segA_mask 00000040
-
-
-
-
-ARM Macro Assembler    Page 3 Alphabetic symbol ordering
-Absolute symbols
 
 Symbol: segA_mask
    Definitions
       At line 28 in file asm_main.s
    Uses
-      At line 388 in file asm_main.s
+      At line 430 in file asm_main.s
 Comment: segA_mask used once
 segB_mask 00000008
 
@@ -857,8 +1161,8 @@ Symbol: segB_mask
       At line 29 in file asm_main.s
    Uses
       At line 65 in file asm_main.s
-      At line 370 in file asm_main.s
-      At line 395 in file asm_main.s
+      At line 412 in file asm_main.s
+      At line 437 in file asm_main.s
 
 segC_mask 00000080
 
@@ -866,7 +1170,7 @@ Symbol: segC_mask
    Definitions
       At line 30 in file asm_main.s
    Uses
-      At line 402 in file asm_main.s
+      At line 444 in file asm_main.s
 Comment: segC_mask used once
 segD_mask 00000020
 
@@ -874,7 +1178,13 @@ Symbol: segD_mask
    Definitions
       At line 31 in file asm_main.s
    Uses
-      At line 409 in file asm_main.s
+      At line 451 in file asm_main.s
+
+
+
+ARM Macro Assembler    Page 4 Alphabetic symbol ordering
+Absolute symbols
+
 Comment: segD_mask used once
 segE_mask 00000002
 
@@ -882,7 +1192,7 @@ Symbol: segE_mask
    Definitions
       At line 32 in file asm_main.s
    Uses
-      At line 416 in file asm_main.s
+      At line 458 in file asm_main.s
 Comment: segE_mask used once
 segF_mask 00000004
 
@@ -890,7 +1200,7 @@ Symbol: segF_mask
    Definitions
       At line 33 in file asm_main.s
    Uses
-      At line 423 in file asm_main.s
+      At line 465 in file asm_main.s
 Comment: segF_mask used once
 segG_mask 00000001
 
@@ -898,7 +1208,7 @@ Symbol: segG_mask
    Definitions
       At line 34 in file asm_main.s
    Uses
-      At line 430 in file asm_main.s
+      At line 472 in file asm_main.s
 Comment: segG_mask used once
 20 symbols
-373 symbols in table
+386 symbols in table
