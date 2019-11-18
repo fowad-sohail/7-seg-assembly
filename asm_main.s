@@ -77,14 +77,14 @@ asm_main
 		STRB	R1, [R0]
 
 loop
-        BL		state0
+        BL		state1
         
         B       loop	; repeat the loop
 
 ; STATES - these control what character is on the 7 segment display
 ;-------------------------------------------------------------------------------
 state0
-	LDR     R0, =150000
+	LDR     R0, =200000
     BL      delayMs
 	
 	BL allOFF
@@ -105,7 +105,7 @@ state0
 	B state0
 ;-------------------------------------------------------------------------------
 state1
-	LDR     R0, =150000
+	LDR     R0, =200000
     BL      delayMs
 	
 	BL allOFF
@@ -116,7 +116,7 @@ state1
 	TST r1, UPmask
 	BEQ state2
 	
-	; to count down to 1
+	; to count down to 0
 	LDR r0, =P1IN
 	LDRB r1, [r0]
 	TST r1, DOWNmask
@@ -128,7 +128,7 @@ state1
 	B state1
 ;-------------------------------------------------------------------------------
 state2
-	LDR     R0, =150000
+	LDR     R0, =200000
     BL      delayMs
 	
 	BL allOFF
@@ -138,6 +138,12 @@ state2
 	LDRB r1, [r0]
 	TST r1, UPmask
 	BEQ state3
+	
+	; to count down to 1
+	LDR r0, =P1IN
+	LDRB r1, [r0]
+	TST r1, DOWNmask
+	BEQ state1
 
 	BL displayA
 	BL displayB
@@ -148,7 +154,7 @@ state2
 	B state2
 ;-------------------------------------------------------------------------------
 state3
-	LDR     R0, =150000
+	LDR     R0, =200000
     BL      delayMs
 	
 	BL allOFF
@@ -159,6 +165,12 @@ state3
 	TST r1, UPmask
 	BEQ state4
 
+	; to count down to 2
+	LDR r0, =P1IN
+	LDRB r1, [r0]
+	TST r1, DOWNmask
+	BEQ state2
+
 	BL displayA
 	BL displayB
 	BL displayC
@@ -168,7 +180,7 @@ state3
 	B state3
 ;-------------------------------------------------------------------------------
 state4
-	LDR     R0, =150000
+	LDR     R0, =200000
     BL      delayMs
 	
 	BL allOFF
@@ -179,6 +191,12 @@ state4
 	TST r1, UPmask
 	BEQ state5
 	
+	; to count down to 3
+	LDR r0, =P1IN
+	LDRB r1, [r0]
+	TST r1, DOWNmask
+	BEQ state3
+	
 	BL displayB
 	BL displayC
 	BL displayF
@@ -187,7 +205,7 @@ state4
 	B state4
 ;-------------------------------------------------------------------------------
 state5
-	LDR     R0, =150000
+	LDR     R0, =200000
     BL      delayMs
 	
 	BL allOFF
@@ -198,6 +216,12 @@ state5
 	TST r1, UPmask
 	BEQ state6
 
+	; to count down to 4
+	LDR r0, =P1IN
+	LDRB r1, [r0]
+	TST r1, DOWNmask
+	BEQ state4
+
 	BL displayA
 	BL displayC
 	BL displayD
@@ -207,7 +231,7 @@ state5
 	B state5
 ;-------------------------------------------------------------------------------
 state6
-	LDR     R0, =150000
+	LDR     R0, =200000
     BL      delayMs
 	
 	BL allOFF
@@ -217,6 +241,12 @@ state6
 	LDRB r1, [r0]
 	TST r1, UPmask
 	BEQ state7
+	
+	; to count down to 5
+	LDR r0, =P1IN
+	LDRB r1, [r0]
+	TST r1, DOWNmask
+	BEQ state5
 	
 	BL displayA
 	BL displayC
@@ -228,7 +258,7 @@ state6
 	B state6
 ;-------------------------------------------------------------------------------
 state7
-	LDR     R0, =150000
+	LDR     R0, =200000
     BL      delayMs
 	
 	BL allOFF
@@ -239,6 +269,12 @@ state7
 	TST r1, UPmask
 	BEQ state8
 	
+	; to count down to 6
+	LDR r0, =P1IN
+	LDRB r1, [r0]
+	TST r1, DOWNmask
+	BEQ state6
+	
 	BL displayA
 	BL displayB
 	BL displayC
@@ -246,7 +282,7 @@ state7
 	B state7
 ;-------------------------------------------------------------------------------
 state8
-	LDR     R0, =150000
+	LDR     R0, =200000
     BL      delayMs
 	
 	BL allOFF
@@ -256,6 +292,12 @@ state8
 	LDRB r1, [r0]
 	TST r1, UPmask
 	BEQ state9
+
+	; to count down to 7
+	LDR r0, =P1IN
+	LDRB r1, [r0]
+	TST r1, DOWNmask
+	BEQ state7
 
 	BL displayA
 	BL displayB
@@ -268,7 +310,7 @@ state8
 	B state8
 ;-------------------------------------------------------------------------------
 state9
-	LDR     R0, =150000
+	LDR     R0, =200000
     BL      delayMs
 	
 	BL allOFF
@@ -278,6 +320,12 @@ state9
 	LDRB r1, [r0]
 	TST r1, UPmask
 	BEQ stateA
+	
+	; to count down to 8
+	LDR r0, =P1IN
+	LDRB r1, [r0]
+	TST r1, DOWNmask
+	BEQ state8
 
 	BL displayA
 	BL displayB
@@ -289,7 +337,7 @@ state9
 	B state9
 ;-------------------------------------------------------------------------------	
 stateA
-	LDR     R0, =150000
+	LDR     R0, =200000
     BL      delayMs
 	
 	BL allOFF
@@ -299,6 +347,12 @@ stateA
 	LDRB r1, [r0]
 	TST r1, UPmask
 	BEQ stateB
+	
+	; to count down to 9
+	LDR r0, =P1IN
+	LDRB r1, [r0]
+	TST r1, DOWNmask
+	BEQ state9
 	
 	BL displayA
 	BL displayB
@@ -310,7 +364,7 @@ stateA
 	B stateA
 ;-------------------------------------------------------------------------------
 stateB
-	LDR     R0, =150000
+	LDR     R0, =200000
     BL      delayMs
 	
 	BL allOFF
@@ -321,6 +375,12 @@ stateB
 	TST r1, UPmask
 	BEQ stateC
 	
+	; to count down to A
+	LDR r0, =P1IN
+	LDRB r1, [r0]
+	TST r1, DOWNmask
+	BEQ stateA
+	
 	BL displayC
 	BL displayD
 	BL displayE
@@ -330,7 +390,7 @@ stateB
 	B stateB
 ;-------------------------------------------------------------------------------
 stateC
-	LDR     R0, =150000
+	LDR     R0, =200000
     BL      delayMs
 	
 	BL allOFF
@@ -341,6 +401,12 @@ stateC
 	TST r1, UPmask
 	BEQ stateD
 	
+	; to count down to B
+	LDR r0, =P1IN
+	LDRB r1, [r0]
+	TST r1, DOWNmask
+	BEQ stateB
+	
 	BL displayA
 	BL displayD
 	BL displayE
@@ -349,7 +415,7 @@ stateC
 	B stateC
 ;-------------------------------------------------------------------------------
 stateD
-	LDR     R0, =150000
+	LDR     R0, =200000
     BL      delayMs
 	
 	BL allOFF
@@ -360,6 +426,12 @@ stateD
 	TST r1, UPmask
 	BEQ stateE
 
+	; to count down to C
+	LDR r0, =P1IN
+	LDRB r1, [r0]
+	TST r1, DOWNmask
+	BEQ stateC
+
 	BL displayB
 	BL displayC
 	BL displayD
@@ -369,7 +441,7 @@ stateD
 	B stateD
 ;-------------------------------------------------------------------------------	
 stateE
-	LDR     R0, =150000
+	LDR     R0, =200000
     BL      delayMs
 	
 	BL allOFF
@@ -380,6 +452,12 @@ stateE
 	TST r1, UPmask
 	BEQ stateF
 
+	; to count down to D
+	LDR r0, =P1IN
+	LDRB r1, [r0]
+	TST r1, DOWNmask
+	BEQ stateD
+
 	BL displayA
 	BL displayD
 	BL displayE
@@ -389,7 +467,7 @@ stateE
 	B stateE
 ;-------------------------------------------------------------------------------
 stateF
-	LDR     R0, =150000
+	LDR     R0, =200000
     BL      delayMs
 	
 	BL allOFF
@@ -399,6 +477,12 @@ stateF
 	LDRB r1, [r0]
 	TST r1, UPmask
 	BEQ state0
+	
+	; to count down to E
+	LDR r0, =P1IN
+	LDRB r1, [r0]
+	TST r1, DOWNmask
+	BEQ stateE
 
 	BL displayA
 	BL displayE
