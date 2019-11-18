@@ -77,7 +77,7 @@ asm_main
 		STRB	R1, [R0]
 
 loop
-        BL		state1
+        BL		state0
         
         B       loop	; repeat the loop
 
@@ -101,6 +101,9 @@ state0
 	BL displayD
 	BL displayE
 	BL displayF
+	
+	LDR     R0, =200000
+    BL      delayMs
 	
 	B state0
 ;-------------------------------------------------------------------------------
@@ -472,17 +475,20 @@ stateF
 	
 	BL allOFF
 	
+	; to count down to E
+	LDR r0, =P1IN
+	LDRB r1, [r0]
+	TST r1, DOWNmask
+	BEQ stateE
+	
+	
 	; if count up button pressed, roll over to 0
 	LDR r0, =P1IN
 	LDRB r1, [r0]
 	TST r1, UPmask
 	BEQ state0
 	
-	; to count down to E
-	LDR r0, =P1IN
-	LDRB r1, [r0]
-	TST r1, DOWNmask
-	BEQ stateE
+	
 
 	BL displayA
 	BL displayE
@@ -494,7 +500,7 @@ stateF
 
 ; SUBROUTINES - these control which segment to light up
 ; ------------------------------------------------------------------------------
-delayMs
+delayMs ; delay
        
 L1      SUBS    R0, #1          ; inner loop
         BNE     L1
