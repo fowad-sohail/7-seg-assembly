@@ -3,11 +3,11 @@
 ;7 Seg Display Counter
 
 ; Port 1 Pin Direction Register
-;P1DIR EQU 0x40004C04
-;; Port 1 Pin Output Register
-;P1OUT EQU 0x40004C02
-;P1IN EQU 0x40004C00
-;P1REN EQU 0x40004C06
+P1DIR EQU 0x40004C04
+; Port 1 Pin Output Register
+P1OUT EQU 0x40004C02
+P1IN EQU 0x40004C00
+P1REN EQU 0x40004C06
 	
 P2REN EQU 0x40004C07 ; resistor enable
 P2DIR EQU 0x40004C05
@@ -19,6 +19,9 @@ P3DIR EQU 0x40004C24
 	
 P5OUT EQU 0x40004C42
 P5DIR EQU 0x40004C44	
+	
+	
+UPmask EQU 0x2 ; bitmask P1.1
 	
 
 ; masks for all segments of the display
@@ -41,10 +44,10 @@ asm_main
         ORR     R1, #8          
         STRB    R1, [R0]        
 				
-;		LDR     R0, =P1DIR      
-;        LDRB    R1, [R0]
-;        ORR     R1, #255          
-;        STRB    R1, [R0]
+		LDR     R0, =P1DIR      
+        LDRB    R1, [R0]
+        ORR     R1, #2          
+        STRB    R1, [R0]
 		
 		LDR     R0, =P3DIR      
         LDRB    R1, [R0]
@@ -56,7 +59,7 @@ asm_main
         ORR     R1, #7          
         STRB    R1, [R0]
 		
-		; attempt to initally clear all the ports
+		; initally clear all the ports - P2, P3, P5
 		LDR     R0, =P2OUT   
 		LDRB    R1, [R0]
 		ORR		R1, segB_mask
@@ -72,22 +75,22 @@ asm_main
 		ORR		R1, #7
 		STRB	R1, [R0]
 
-
-;		LDR     R0, =P2OUT      ; load Dir Reg in R1
-;		LDRB    R1, [R0]        ;
-;		ORR     R1, 0x8		; set bit ---- maybe? P2.3
-;		STRB    R1, [R0]        ; store back to Dir Reg
-
-
-
 loop
-        BL		stateF
+        BL		state0
         
         B       loop	; repeat the loop
 
 ; STATES - these control what character is on the 7 segment display
 ;-------------------------------------------------------------------------------
 state0
+	BL allOFF
+	
+	; to count up to 1
+	LDR r0, =P1IN
+	LDRB r1, [r0]
+	TST r1, UPmask
+	BEQ state1
+	
 	BL displayA
 	BL displayB
 	BL displayC
@@ -96,14 +99,33 @@ state0
 	BL displayF
 	
 	B state0
-
+;-------------------------------------------------------------------------------
 state1
+	LDR     R0, =300000
+    BL      delayMs
+	
+	BL allOFF
+	
+	; to count up to 2
+	LDR r0, =P1IN
+	LDRB r1, [r0]
+	TST r1, UPmask
+	BEQ state2
+
 	BL displayB
 	BL displayC
 	
 	B state1
-
+;-------------------------------------------------------------------------------
 state2
+	BL allOFF
+	
+;	; to count up to 3
+;	LDR r0, =P1IN
+;	LDRB r1, [r0]
+;	TST r1, UPmask
+;	BEQ state3
+
 	BL displayA
 	BL displayB
 	BL displayD
@@ -111,125 +133,227 @@ state2
 	BL displayG
 	
 	B state2
+;-------------------------------------------------------------------------------
+;state3
+;	BL allOFF
+;	
+;	; to count up to 4
+;	LDR r0, =P1IN
+;	LDRB r1, [r0]
+;	TST r1, UPmask
+;	BEQ state4
 
-state3
-	BL displayA
-	BL displayB
-	BL displayC
-	BL displayD
-	BL displayG
-	
-	B state3
+;	BL displayA
+;	BL displayB
+;	BL displayC
+;	BL displayD
+;	BL displayG
+;	
+;	B state3
+;;-------------------------------------------------------------------------------
+;state4
+;	BL allOFF
+;	
+;	; to count up to 5
+;	LDR r0, =P1IN
+;	LDRB r1, [r0]
+;	TST r1, UPmask
+;	BEQ state5
+;	
+;	BL displayB
+;	BL displayC
+;	BL displayF
+;	BL displayG
 
-state4
-	BL displayB
-	BL displayC
-	BL displayF
-	BL displayG
+;	B state4
+;;-------------------------------------------------------------------------------
+;state5
+;	BL allOFF
+;	
+;	; to count up to 6
+;	LDR r0, =P1IN
+;	LDRB r1, [r0]
+;	TST r1, UPmask
+;	BEQ state6
 
-	B state4
+;	BL displayA
+;	BL displayC
+;	BL displayD
+;	BL displayF
+;	BL displayG
+;	
+;	B state5
+;;-------------------------------------------------------------------------------
+;state6
+;	BL allOFF
+;	
+;	; to count up to 7
+;	LDR r0, =P1IN
+;	LDRB r1, [r0]
+;	TST r1, UPmask
+;	BEQ state7
+;	
+;	BL displayA
+;	BL displayC
+;	BL displayD
+;	BL displayE
+;	BL displayF
+;	BL displayG
+;	
+;	B state6
+;;-------------------------------------------------------------------------------
+;state7
+;	BL allOFF
+;	
+;	; to count up to 8
+;	LDR r0, =P1IN
+;	LDRB r1, [r0]
+;	TST r1, UPmask
+;	BEQ state8
+;	
+;	BL displayA
+;	BL displayB
+;	BL displayC
+;	
+;	B state7
+;;-------------------------------------------------------------------------------
+;state8
+;	BL allOFF
+;	
+;	; to count up to 9
+;	LDR r0, =P1IN
+;	LDRB r1, [r0]
+;	TST r1, UPmask
+;	BEQ state9
 
-state5
-	BL displayA
-	BL displayC
-	BL displayD
-	BL displayF
-	BL displayG
-	
-	B state5
+;	BL displayA
+;	BL displayB
+;	BL displayC
+;	BL displayD
+;	BL displayE
+;	BL displayF
+;	BL displayG
+;	
+;	B state8
+;;-------------------------------------------------------------------------------
+;state9
+;	BL allOFF
+;	
+;	; to count up to A
+;	LDR r0, =P1IN
+;	LDRB r1, [r0]
+;	TST r1, UPmask
+;	BEQ stateA
 
-state6
-	BL displayA
-	BL displayC
-	BL displayD
-	BL displayE
-	BL displayF
-	BL displayG
-	
-	B state6
+;	BL displayA
+;	BL displayB
+;	BL displayC
+;	BL displayD
+;	BL displayF
+;	BL displayG
+;	
+;	B state9
+;;-------------------------------------------------------------------------------	
+;stateA
+;	BL allOFF
+;	
+;	; to count up to B
+;	LDR r0, =P1IN
+;	LDRB r1, [r0]
+;	TST r1, UPmask
+;	BEQ stateB
+;	
+;	BL displayA
+;	BL displayB
+;	BL displayC
+;	BL displayE
+;	BL displayF
+;	BL displayG
+;	
+;	B stateA
+;;-------------------------------------------------------------------------------
+;stateB
+;	BL allOFF
+;	
+;	; to count up to C
+;	LDR r0, =P1IN
+;	LDRB r1, [r0]
+;	TST r1, UPmask
+;	BEQ stateC
+;	
+;	BL displayC
+;	BL displayD
+;	BL displayE
+;	BL displayF
+;	BL displayG
+;	
+;	B stateB
+;;-------------------------------------------------------------------------------
+;stateC
+;	BL allOFF
+;	
+;	; to count up to D
+;	LDR r0, =P1IN
+;	LDRB r1, [r0]
+;	TST r1, UPmask
+;	BEQ stateD
+;	
+;	BL displayA
+;	BL displayD
+;	BL displayE
+;	BL displayF
+;	
+;	B stateC
+;;-------------------------------------------------------------------------------
+;stateD
+;	BL allOFF
+;	
+;	; to count up to E
+;	LDR r0, =P1IN
+;	LDRB r1, [r0]
+;	TST r1, UPmask
+;	BEQ stateE
 
-state7
-	BL displayA
-	BL displayB
-	BL displayC
-	
-	B state7
-	
-state8
-	BL displayA
-	BL displayB
-	BL displayC
-	BL displayD
-	BL displayE
-	BL displayF
-	BL displayG
-	
-	B state8
-	
-state9
-	BL displayA
-	BL displayB
-	BL displayC
-	BL displayD
-	BL displayF
-	BL displayG
-	
-	B state9
-	
-stateA
-	BL displayA
-	BL displayB
-	BL displayC
-	BL displayE
-	BL displayF
-	BL displayG
-	
-	B stateA
+;	BL displayB
+;	BL displayC
+;	BL displayD
+;	BL displayE
+;	BL displayG
+;	
+;	B stateD
+;;-------------------------------------------------------------------------------	
+;stateE
+;	BL allOFF
+;	
+;	; to count up to F
+;	LDR r0, =P1IN
+;	LDRB r1, [r0]
+;	TST r1, UPmask
+;	BEQ stateF
 
+;	BL displayA
+;	BL displayD
+;	BL displayE
+;	BL displayF
+;	BL displayG
+;	
+;	B stateE
+;;-------------------------------------------------------------------------------
+;stateF
+;	BL allOFF
+;	
+;	; if count up button pressed, roll over to 0
+;	LDR r0, =P1IN
+;	LDRB r1, [r0]
+;	TST r1, UPmask
+;	BEQ state0
 
-stateB
-	BL displayC
-	BL displayD
-	BL displayE
-	BL displayF
-	BL displayG
-	
-	B stateB
-
-stateC
-	BL displayA
-	BL displayD
-	BL displayE
-	BL displayF
-	
-	B stateC
-
-stateD
-	BL displayB
-	BL displayC
-	BL displayD
-	BL displayE
-	BL displayG
-	
-	B stateD
-	
-stateE
-	BL displayA
-	BL displayD
-	BL displayE
-	BL displayF
-	BL displayG
-	
-	B stateE
-
-stateF
-	BL displayA
-	BL displayE
-	BL displayF
-	BL displayG
-	
-	B stateF
-
+;	BL displayA
+;	BL displayE
+;	BL displayF
+;	BL displayG
+;	
+;	B stateF
 ; ------------------------------------------------------------------------------
 
 ; SUBROUTINES - these control which segment to light up
@@ -239,6 +363,24 @@ delayMs
 L1      SUBS    R0, #1          ; inner loop
         BNE     L1
         BX      LR
+
+allOFF ; turn all segments off
+		LDR     R0, =P2OUT   
+		LDRB    R1, [R0]
+		ORR		R1, segB_mask
+		STRB	R1, [R0]
+		
+		LDR     R0, =P3OUT   
+		LDRB    R1, [R0]
+		ORR		R1, #224
+		STRB	R1, [R0]
+		
+		LDR     R0, =P5OUT   
+		LDRB    R1, [R0]
+		ORR		R1, #7
+		STRB	R1, [R0]
+		
+		BX LR
 		
 displayA ; turn on port 3.6
 		LDR     R0, =P3OUT
