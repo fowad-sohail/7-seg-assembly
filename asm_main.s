@@ -2,576 +2,654 @@
 ;Intro to Embedded Final Project
 ;7 Seg Display Counter
 
-; Port 1 Pin Direction Register
-P1DIR EQU 0x40004C04
-; Port 1 Pin Output Register
-P1OUT EQU 0x40004C02
+; Output register
 P1IN EQU 0x40004C00
-P1REN EQU 0x40004C06
-	
-P2REN EQU 0x40004C07 ; resistor enable
-P2DIR EQU 0x40004C05
-P2OUT EQU 0x40004C03
 P2IN EQU 0x40004C01
-
-P3OUT EQU 0x40004C22
-P3DIR EQU 0x40004C24
-	
-P5OUT EQU 0x40004C42
-P5DIR EQU 0x40004C44	
-	
-	
-UPmask EQU 0x2 ; bitmask P1.1
-DOWNmask EQU 0x10 ; bitmask P1.4
-	
-
-; masks for all segments of the display
-segA_mask EQU 0x40 ; bitmask P3.6
-segB_mask EQU 0x8 ; bitmask P2.3
-segC_mask EQU 0x80 ; bitmask P3.7
-segD_mask EQU 0x20 ; bitmask P3.5
-segE_mask EQU 0x2 ; bitmask P5.1
-segF_mask EQU 0x4; bitmask P5.2
-segG_mask EQU 0x1 ; bitmask P5.0
-
-
+; Direction register
+P1DIR EQU 0x40004C04
+P2DIR EQU 0x40004C05
+; Output register
+P1OUT EQU 0x40004C02
+P2OUT EQU 0x40004C03
+; Internal enable register
+P1REN EQU 0x40004C06
+P2REN EQU 0x40004C07
+Amask EQU 0x20 ;           A 
+Bmask EQU 0x40 ;       F       B
+Cmask EQU 0x80 ;           G
+Dmask EQU 0x8  ;       E       C
+Emask EQU 0x10 ;           D
+Fmask EQU 0x40            
+Gmask EQU 0x80
+ROLLmask EQU 0x20
+DECmask EQU 0x2
+INCmask EQU 0x10
         THUMB
         AREA    |.text|, CODE, READONLY, ALIGN=2
         EXPORT  asm_main
-
 asm_main
-        LDR     R0, =P2DIR      
+        ; make P1 an output port
+        LDR     R0, =P1DIR        ; load Dir Reg in R1
         LDRB    R1, [R0]
-        ORR     R1, #8          
-        STRB    R1, [R0]        
-				
-		LDR     R0, =P1DIR      
-        LDRB    R1, [R0]
-        ORR     R1, #2          
-        STRB    R1, [R0]
-		
-		LDR     R0, =P3DIR      
-        LDRB    R1, [R0]
-        ORR     R1, #224          
-        STRB    R1, [R0]
-		
-		LDR     R0, =P5DIR      
-        LDRB    R1, [R0]
-        ORR     R1, #7          
-        STRB    R1, [R0]
-		
-		; initally clear all the ports - P2, P3, P5
-		LDR     R0, =P2OUT   
-		LDRB    R1, [R0]
-		ORR		R1, segB_mask
-		STRB	R1, [R0]
-		
-		LDR     R0, =P3OUT   
-		LDRB    R1, [R0]
-		ORR		R1, #224
-		STRB	R1, [R0]
-		
-		LDR     R0, =P5OUT   
-		LDRB    R1, [R0]
-		ORR		R1, #7
-		STRB	R1, [R0]
-
-loop
-        BL		state0
+        ORR     R1, DECmask       ; P1.1
+        ORR     R1, INCmask       ; P1.4
+        ORR     R1, ROLLmask      ; P1.5
+        ORR     R1, Bmask         ; P1.6
+        ORR     R1, Cmask         ; P1.7
+        STRB    R1, [R0]          ; store back to Dir Reg
         
-        B       loop	; repeat the loop
+        ; make P2 an output port
+        LDR     R0, =P2DIR        ; load Dir Reg in R1
+        LDRB    R1, [R0]
+        ORR     R1, Dmask         ; P2.3
+        ORR     R1, Emask         ; P2.4
+        ORR     R1, Amask         ; P2.5
+        ORR     R1, Fmask         ; P2.6
+        ORR     R1, Gmask         ; P2.7
+        STRB    R1, [R0]          ; store back to Dir Reg
+        
+        B state_zero
+        
+state_zero  
+    ; delay for 0.5 second
+        LDR     R0, =200000
+        BL      delayMs 
+		
+        BL zero    
+        
+        LDR r0, =P1IN
+        LDRB r1, [r0]
+        TST r1, INCmask
+        BEQ state_one
+        
+        TST r1, DECmask
+        BEQ.W state_F
+        
+        B state_zero
+        LTORG
+state_one
+        ; delay for 0.5 second
+        LDR     R0, =200000
+        BL      delayMs
+		
+		BL one
+		
+        LDR r0, =P1IN
+        LDRB r1, [r0]
+        TST r1, INCmask
+        BEQ state_two
+        
+        TST r1, DECmask
+        BEQ state_zero
+		
+        TST r1, ROLLmask
+        BNE state_zero
+        
+        B state_one
+        LTORG
+state_two
+        ; delay for 0.5 second
+        LDR     R0, =200000
+        BL      delayMs
+		
+		 BL two
+        
+        LDR r0, =P1IN
+        LDRB r1, [r0]
+        TST r1, INCmask
+        BEQ state_three
+        
+        TST r1, DECmask
+        BEQ state_one
+		
+        TST r1, ROLLmask
+        BNE state_one
+        
+        B state_two
+        LTORG
+        
+state_three
+        BL three
+        
+        ; delay for 0.5 second
+        LDR     R0, =200000
+        BL      delayMs
+        
+        LDR r0, =P1IN
+        LDRB r1, [r0]
+        TST r1, INCmask
+        BEQ state_four
+                
+        TST r1, DECmask
+        BEQ state_two
+        
+        TST r1, ROLLmask
+        BNE state_two
+        
+        B state_three
+        LTORG
+state_four
+        BL four
+        
+        ; delay for 0.5 second
+        LDR     R0, =200000
+        BL      delayMs
+        
+        LDR r0, =P1IN
+        LDRB r1, [r0]
+        TST r1, INCmask
+        BEQ state_five
+        
+        TST r1, DECmask
+        BEQ state_three
+        
+        TST r1, ROLLmask
+        BNE state_three
+        
+        B state_four
+        
+state_five
+        BL five
+        
+        ; delay for 0.5 second
+        LDR     R0, =200000
+        BL      delayMs
+        
+        LDR r0, =P1IN
+        LDRB r1, [r0]
+        TST r1, INCmask
+        BEQ state_six
+        
+        TST r1, DECmask
+        BEQ state_four
+        
+        TST r1, ROLLmask
+        BNE state_four
+        
+        B state_five
+    
+state_six
+        BL six
+        
+        ; delay for 0.5 second
+        LDR     R0, =200000
+        BL      delayMs
+        
+        LDR r0, =P1IN
+        LDRB r1, [r0]
+        TST r1, INCmask
+        BEQ state_seven
+        
+        TST r1, DECmask
+        BEQ state_five
+		
+        TST r1, ROLLmask
+        BNE state_five
+        
+        B state_six
+state_seven
+        BL seven
+        
+        ; delay for 0.5 second
+        LDR     R0, =200000
+        BL      delayMs
+        
+        LDR r0, =P1IN
+        LDRB r1, [r0]
+        TST r1, INCmask
+        BEQ state_eight
+        
+        TST r1, DECmask
+        BEQ state_six
+        
+        TST r1, ROLLmask
+        BNE state_six
+        
+        B state_seven
+state_eight
+        BL eight
+        
+        ; delay for 0.5 second
+        LDR     R0, =200000
+        BL      delayMs
+        
+        LDR r0, =P1IN
+        LDRB r1, [r0]
+        TST r1, INCmask
+        BEQ state_nine
+        
+        TST r1, DECmask
+        BEQ state_seven
+        
+        TST r1, ROLLmask
+        BNE state_nine
+        
+        B state_eight
+state_nine
+        BL nine
+        
+        ; delay for 0.5 second
+        LDR     R0, =200000
+        BL      delayMs
+        
+        LDR r0, =P1IN
+        LDRB r1, [r0]
+        TST r1, INCmask
+        BEQ state_A
+        
+        TST r1, DECmask
+        BEQ state_eight
+        
+        TST r1, ROLLmask
+        BNE state_A
+        
+        B state_nine
+state_A
+        BL A
+        
+        ; delay for 0.5 second
+        LDR     R0, =200000
+        BL      delayMs
+        
+        LDR r0, =P1IN
+        LDRB r1, [r0]
+        TST r1, INCmask
+        BEQ state_B
+        
+        TST r1, DECmask
+        BEQ state_nine
+        
+        TST r1, ROLLmask
+        BNE state_B
+        
+        B state_A
+state_B
+        BL B_
+        
+        ; delay for 0.5 second
+        LDR     R0, =200000
+        BL      delayMs
+        
+        LDR r0, =P1IN
+        LDRB r1, [r0]
+        TST r1, INCmask
+        BEQ state_C
+        
+        TST r1, DECmask
+        BEQ state_A
+        
+        TST r1, ROLLmask
+        BNE state_C
+        
+        B state_B
+state_C
+        BL C
+        
+        ; delay for 0.5 second
+        LDR     R0, =200000
+        BL      delayMs
+        
+        LDR r0, =P1IN
+        LDRB r1, [r0]
+        TST r1, INCmask
+        BEQ state_D
+        
+        TST r1, DECmask
+        BEQ state_B
+        
+        TST r1, ROLLmask
+        BNE state_D
+        
+        B state_C
+state_D
+        BL D
+        
+        ; delay for 0.5 second
+        LDR     R0, =200000
+        BL      delayMs
+        
+        LDR r0, =P1IN
+        LDRB r1, [r0]
+        TST r1, INCmask
+        BEQ state_E
+        
+        TST r1, DECmask
+        BEQ state_C
+        
+        TST r1, ROLLmask
+        BNE state_E
+        
+        B state_D
+state_E
+        BL E
+        
+        ; delay for 0.5 second
+        LDR     R0, =200000
+        BL      delayMs
+        
+        LDR r0, =P1IN
+        LDRB r1, [r0]
+        TST r1, INCmask
+        BEQ state_F
+        
+        TST r1, DECmask
+        BEQ state_D
+        
+        TST r1, ROLLmask
+        BNE state_F
+        
+        B state_E
+        LTORG
+state_F
+        BL F
+        
+        ; delay for 0.5 second
+        LDR     R0, =200000
+        BL      delayMs
+        
+        LDR r0, =P1IN
+        LDRB r1, [r0]
+        TST r1, INCmask
+        BEQ state_zero
+        
+        TST r1, DECmask
+        BEQ state_E
+        
+        TST r1, ROLLmask
+        BNE state_zero
+        
+        B state_F
+        LTORG
 
-; STATES - these control what character is on the 7 segment display
-;-------------------------------------------------------------------------------
-state0
-	LDR     R0, =200000
-    BL      delayMs
-	
-	BL allOFF
-	
-	; to count up to 1
-	LDR r0, =P1IN
-	LDRB r1, [r0]
-	TST r1, UPmask
-	BEQ state1
-	
-	BL displayA
-	BL displayB
-	BL displayC
-	BL displayD
-	BL displayE
-	BL displayF
-	
-	LDR     R0, =200000
-    BL      delayMs
-	
-	B state0
-;-------------------------------------------------------------------------------
-state1
-	LDR     R0, =200000
-    BL      delayMs
-	
-	BL allOFF
-	
-	; to count up to 2
-	LDR r0, =P1IN
-	LDRB r1, [r0]
-	TST r1, UPmask
-	BEQ state2
-	
-	; to count down to 0
-	LDR r0, =P1IN
-	LDRB r1, [r0]
-	TST r1, DOWNmask
-	BEQ state0
-
-	BL displayB
-	BL displayC
-	
-	B state1
-;-------------------------------------------------------------------------------
-state2
-	LDR     R0, =200000
-    BL      delayMs
-	
-	BL allOFF
-	
-	; to count up to 3
-	LDR r0, =P1IN
-	LDRB r1, [r0]
-	TST r1, UPmask
-	BEQ state3
-	
-	; to count down to 1
-	LDR r0, =P1IN
-	LDRB r1, [r0]
-	TST r1, DOWNmask
-	BEQ state1
-
-	BL displayA
-	BL displayB
-	BL displayD
-	BL displayE
-	BL displayG
-	
-	B state2
-;-------------------------------------------------------------------------------
-state3
-	LDR     R0, =200000
-    BL      delayMs
-	
-	BL allOFF
-	
-	; to count up to 4
-	LDR r0, =P1IN
-	LDRB r1, [r0]
-	TST r1, UPmask
-	BEQ state4
-
-	; to count down to 2
-	LDR r0, =P1IN
-	LDRB r1, [r0]
-	TST r1, DOWNmask
-	BEQ state2
-
-	BL displayA
-	BL displayB
-	BL displayC
-	BL displayD
-	BL displayG
-	
-	B state3
-;-------------------------------------------------------------------------------
-state4
-	LDR     R0, =200000
-    BL      delayMs
-	
-	BL allOFF
-	
-	; to count up to 5
-	LDR r0, =P1IN
-	LDRB r1, [r0]
-	TST r1, UPmask
-	BEQ state5
-	
-	; to count down to 3
-	LDR r0, =P1IN
-	LDRB r1, [r0]
-	TST r1, DOWNmask
-	BEQ state3
-	
-	BL displayB
-	BL displayC
-	BL displayF
-	BL displayG
-
-	B state4
-;-------------------------------------------------------------------------------
-state5
-	LDR     R0, =200000
-    BL      delayMs
-	
-	BL allOFF
-	
-	; to count up to 6
-	LDR r0, =P1IN
-	LDRB r1, [r0]
-	TST r1, UPmask
-	BEQ state6
-
-	; to count down to 4
-	LDR r0, =P1IN
-	LDRB r1, [r0]
-	TST r1, DOWNmask
-	BEQ state4
-
-	BL displayA
-	BL displayC
-	BL displayD
-	BL displayF
-	BL displayG
-	
-	B state5
-;-------------------------------------------------------------------------------
-state6
-	LDR     R0, =200000
-    BL      delayMs
-	
-	BL allOFF
-	
-	; to count up to 7
-	LDR r0, =P1IN
-	LDRB r1, [r0]
-	TST r1, UPmask
-	BEQ state7
-	
-	; to count down to 5
-	LDR r0, =P1IN
-	LDRB r1, [r0]
-	TST r1, DOWNmask
-	BEQ state5
-	
-	BL displayA
-	BL displayC
-	BL displayD
-	BL displayE
-	BL displayF
-	BL displayG
-	
-	B state6
-;-------------------------------------------------------------------------------
-state7
-	LDR     R0, =200000
-    BL      delayMs
-	
-	BL allOFF
-	
-	; to count up to 8
-	LDR r0, =P1IN
-	LDRB r1, [r0]
-	TST r1, UPmask
-	BEQ state8
-	
-	; to count down to 6
-	LDR r0, =P1IN
-	LDRB r1, [r0]
-	TST r1, DOWNmask
-	BEQ state6
-	
-	BL displayA
-	BL displayB
-	BL displayC
-	
-	B state7
-;-------------------------------------------------------------------------------
-state8
-	LDR     R0, =200000
-    BL      delayMs
-	
-	BL allOFF
-	
-	; to count up to 9
-	LDR r0, =P1IN
-	LDRB r1, [r0]
-	TST r1, UPmask
-	BEQ state9
-
-	; to count down to 7
-	LDR r0, =P1IN
-	LDRB r1, [r0]
-	TST r1, DOWNmask
-	BEQ state7
-
-	BL displayA
-	BL displayB
-	BL displayC
-	BL displayD
-	BL displayE
-	BL displayF
-	BL displayG
-	
-	B state8
-;-------------------------------------------------------------------------------
-state9
-	LDR     R0, =200000
-    BL      delayMs
-	
-	BL allOFF
-	
-	; to count up to A
-	LDR r0, =P1IN
-	LDRB r1, [r0]
-	TST r1, UPmask
-	BEQ stateA
-	
-	; to count down to 8
-	LDR r0, =P1IN
-	LDRB r1, [r0]
-	TST r1, DOWNmask
-	BEQ state8
-
-	BL displayA
-	BL displayB
-	BL displayC
-	BL displayD
-	BL displayF
-	BL displayG
-	
-	B state9
-;-------------------------------------------------------------------------------	
-stateA
-	LDR     R0, =200000
-    BL      delayMs
-	
-	BL allOFF
-	
-	; to count up to B
-	LDR r0, =P1IN
-	LDRB r1, [r0]
-	TST r1, UPmask
-	BEQ stateB
-	
-	; to count down to 9
-	LDR r0, =P1IN
-	LDRB r1, [r0]
-	TST r1, DOWNmask
-	BEQ state9
-	
-	BL displayA
-	BL displayB
-	BL displayC
-	BL displayE
-	BL displayF
-	BL displayG
-	
-	B stateA
-;-------------------------------------------------------------------------------
-stateB
-	LDR     R0, =200000
-    BL      delayMs
-	
-	BL allOFF
-	
-	; to count up to C
-	LDR r0, =P1IN
-	LDRB r1, [r0]
-	TST r1, UPmask
-	BEQ stateC
-	
-	; to count down to A
-	LDR r0, =P1IN
-	LDRB r1, [r0]
-	TST r1, DOWNmask
-	BEQ stateA
-	
-	BL displayC
-	BL displayD
-	BL displayE
-	BL displayF
-	BL displayG
-	
-	B stateB
-;-------------------------------------------------------------------------------
-stateC
-	LDR     R0, =200000
-    BL      delayMs
-	
-	BL allOFF
-	
-	; to count up to D
-	LDR r0, =P1IN
-	LDRB r1, [r0]
-	TST r1, UPmask
-	BEQ stateD
-	
-	; to count down to B
-	LDR r0, =P1IN
-	LDRB r1, [r0]
-	TST r1, DOWNmask
-	BEQ stateB
-	
-	BL displayA
-	BL displayD
-	BL displayE
-	BL displayF
-	
-	B stateC
-;-------------------------------------------------------------------------------
-stateD
-	LDR     R0, =200000
-    BL      delayMs
-	
-	BL allOFF
-	
-	; to count up to E
-	LDR r0, =P1IN
-	LDRB r1, [r0]
-	TST r1, UPmask
-	BEQ stateE
-
-	; to count down to C
-	LDR r0, =P1IN
-	LDRB r1, [r0]
-	TST r1, DOWNmask
-	BEQ stateC
-
-	BL displayB
-	BL displayC
-	BL displayD
-	BL displayE
-	BL displayG
-	
-	B stateD
-;-------------------------------------------------------------------------------	
-stateE
-	LDR     R0, =200000
-    BL      delayMs
-	
-	BL allOFF
-	
-	; to count up to F
-	LDR r0, =P1IN
-	LDRB r1, [r0]
-	TST r1, UPmask
-	BEQ stateF
-
-	; to count down to D
-	LDR r0, =P1IN
-	LDRB r1, [r0]
-	TST r1, DOWNmask
-	BEQ stateD
-
-	BL displayA
-	BL displayD
-	BL displayE
-	BL displayF
-	BL displayG
-	
-	B stateE
-;-------------------------------------------------------------------------------
-stateF
-	LDR     R0, =200000
-    BL      delayMs
-	
-	BL allOFF
-	
-	; to count down to E
-	LDR r0, =P1IN
-	LDRB r1, [r0]
-	TST r1, DOWNmask
-	BEQ stateE
-	
-	
-	; if count up button pressed, roll over to 0
-	LDR r0, =P1IN
-	LDRB r1, [r0]
-	TST r1, UPmask
-	BEQ state0
-	
-	
-
-	BL displayA
-	BL displayE
-	BL displayF
-	BL displayG
-	
-	B stateF
-; ------------------------------------------------------------------------------
-
-; SUBROUTINES - these control which segment to light up
-; ------------------------------------------------------------------------------
-delayMs ; delay
+;;;;;;;;;;;;;;;;;  Subroutines  ;;;;;;;;;;;;;;;;;
+; BIC turns on segment and ORR turns off segment
+; because of negative logic
+zero
+        ; B and C segments
+        LDR     R0, =P1OUT      ; load Output Data Reg in R1
+        LDRB    R1, [R0]
+        ORR     R1, Bmask
+        ORR     R1, Cmask
+        STRB    R1, [R0]        ; store back to Output Data Reg
+        
+        LDR     R0, =P2OUT
+        ORR     R1, Amask
+        ORR     R1, Dmask
+        ORR     R1, Emask
+        ORR     R1, Fmask
+        BIC     R1, Gmask
+        STRB    R1, [R0]
+        BX      LR
+        
+one
+        ; B and C segments
+        LDR     R0, =P1OUT      ; load Output Data Reg in R1
+        LDRB    R1, [R0]
+        ORR     R1, Bmask
+        ORR     R1, Cmask
+        STRB    R1, [R0]        ; store back to Output Data Reg
+        
+        LDR     R0, =P2OUT
+        BIC     R1, Amask
+        BIC     R1, Dmask
+        BIC     R1, Emask
+        BIC     R1, Fmask
+        BIC     R1, Gmask
+        STRB    R1, [R0]
+        BX      LR
+two
+        ; A B D E G segments
+        LDR     R0, =P1OUT      ; load Output Data Reg in R1
+        LDRB    R1, [R0]
+        ORR     R1, Bmask
+        BIC     R1, Cmask
+        STRB    R1, [R0]        ; store back to Output Data Reg
+        
+        LDR     R0, =P2OUT
+        ORR     R1, Amask
+        ORR     R1, Dmask
+        ORR     R1, Emask
+        BIC     R1, Fmask
+        ORR     R1, Gmask
+        STRB    R1, [R0]
+        
+        BX      LR
+        
+three
+        ; A B C D G segments
+        LDR     R0, =P1OUT      ; load Output Data Reg in R1
+        LDRB    R1, [R0]
+        ORR     R1, Bmask
+        ORR     R1, Cmask
+        STRB    R1, [R0]        ; store back to Output Data Reg
+        
+        LDR     R0, =P2OUT
+        ORR     R1, Amask
+        ORR     R1, Dmask
+        BIC     R1, Emask
+        BIC     R1, Fmask
+        ORR     R1, Gmask
+        STRB    R1, [R0]
+        
+        BX      LR
+        
+four
+        ; B C F G segments
+        LDR     R0, =P1OUT      ; load Output Data Reg in R1
+        LDRB    R1, [R0]
+        ORR     R1, Bmask
+        ORR     R1, Cmask
+        STRB    R1, [R0]        ; store back to Output Data Reg
+        
+        LDR     R0, =P2OUT
+        BIC     R1, Amask
+        BIC     R1, Dmask
+        BIC     R1, Emask
+        ORR     R1, Fmask
+        ORR     R1, Gmask
+        STRB    R1, [R0]
+        BX      LR
+        
+five
+        ; A C D F G segments
+        LDR     R0, =P1OUT      ; load Output Data Reg in R1
+        LDRB    R1, [R0]
+        BIC     R1, Bmask
+        ORR     R1, Cmask
+        STRB    R1, [R0]        ; store back to Output Data Reg
+        
+        LDR     R0, =P2OUT
+        ORR     R1, Amask
+        ORR     R1, Dmask
+        BIC     R1, Emask
+        ORR     R1, Fmask
+        ORR     R1, Gmask
+        STRB    R1, [R0]
+        
+        BX      LR
+        
+six
+        ; A C D E F G segments
+        LDR     R0, =P1OUT      ; load Output Data Reg in R1
+        LDRB    R1, [R0]
+        BIC     R1, Bmask
+        ORR     R1, Cmask
+        STRB    R1, [R0]        ; store back to Output Data Reg
+        
+        LDR     R0, =P2OUT
+        ORR     R1, Amask
+        ORR     R1, Dmask
+        ORR     R1, Emask
+        ORR     R1, Fmask
+        ORR     R1, Gmask
+        STRB    R1, [R0]
+        
+        BX      LR
+        
+seven
+        ; A B C segments
+        LDR     R0, =P1OUT      ; load Output Data Reg in R1
+        LDRB    R1, [R0]
+        ORR     R1, Bmask
+        ORR     R1, Cmask
+        STRB    R1, [R0]        ; store back to Output Data Reg
+        
+        LDR     R0, =P2OUT
+        ORR     R1, Amask
+        BIC     R1, Dmask
+        BIC     R1, Emask
+        BIC     R1, Fmask
+        BIC     R1, Gmask
+        STRB    R1, [R0]
+        
+        BX      LR
+        
+eight
+        ; A B C D E F G segments
+        LDR     R0, =P1OUT      ; load Output Data Reg in R1
+        LDRB    R1, [R0]
+        ORR     R1, Bmask
+        ORR     R1, Cmask
+        STRB    R1, [R0]        ; store back to Output Data Reg
+        
+        LDR     R0, =P2OUT
+        ORR     R1, Amask
+        ORR     R1, Dmask
+        ORR     R1, Emask
+        ORR     R1, Fmask
+        ORR     R1, Gmask
+        STRB    R1, [R0]
+        
+        BX      LR
+        
+nine
+        ; A B C F G  segments
+        LDR     R0, =P1OUT      ; load Output Data Reg in R1
+        LDRB    R1, [R0]
+        ORR     R1, Bmask
+        ORR     R1, Cmask
+        STRB    R1, [R0]        ; store back to Output Data Reg
+        
+        LDR     R0, =P2OUT
+        ORR     R1, Amask
+        BIC     R1, Dmask
+        BIC     R1, Emask
+        ORR     R1, Fmask
+        ORR     R1, Gmask
+        STRB    R1, [R0]
+        
+        BX      LR
+        
+A
+        ; A B C E F G segments
+        LDR     R0, =P1OUT      ; load Output Data Reg in R1
+        LDRB    R1, [R0]
+        ORR     R1, Bmask
+        ORR     R1, Cmask
+        STRB    R1, [R0]        ; store back to Output Data Reg
+        
+        LDR     R0, =P2OUT
+        ORR     R1, Amask
+        BIC     R1, Dmask
+        ORR     R1, Emask
+        ORR     R1, Fmask
+        ORR     R1, Gmask
+        STRB    R1, [R0]
+        
+        BX      LR
+B_
+        LDR     R0, =P1OUT      ; load Output Data Reg in R1
+        LDRB    R1, [R0]
+        BIC     R1, Bmask
+        ORR     R1, Cmask
+        STRB    R1, [R0]        ; store back to Output Data Reg
+        
+        LDR     R0, =P2OUT
+        BIC     R1, Amask
+        ORR     R1, Dmask
+        ORR     R1, Emask
+        ORR     R1, Fmask
+        ORR     R1, Gmask
+        STRB    R1, [R0]
+        
+        BX      LR
+        
+C
+        ; A D E F segments
+        LDR     R0, =P1OUT      ; load Output Data Reg in R1
+        LDRB    R1, [R0]
+        BIC     R1, Bmask
+        BIC     R1, Cmask
+        STRB    R1, [R0]        ; store back to Output Data Reg
+        
+        LDR     R0, =P2OUT
+        ORR     R1, Amask
+        ORR     R1, Dmask
+        ORR     R1, Emask
+        ORR     R1, Fmask
+        BIC     R1, Gmask
+        STRB    R1, [R0]
+        
+        BX      LR
+        
+D
+        ; A B C D E F segments
+        LDR     R0, =P1OUT      ; load Output Data Reg in R1
+        LDRB    R1, [R0]
+        ORR     R1, Bmask
+        ORR     R1, Cmask
+        STRB    R1, [R0]        ; store back to Output Data Reg
+        
+        LDR     R0, =P2OUT
+        BIC     R1, Amask
+        ORR     R1, Dmask
+        ORR     R1, Emask
+        BIC     R1, Fmask
+        ORR     R1, Gmask
+        STRB    R1, [R0]
+        
+        BX      LR
+        
+E
+        ; A D E F G segments
+        LDR     R0, =P1OUT      ; load Output Data Reg in R1
+        LDRB    R1, [R0]
+        BIC     R1, Bmask
+        BIC     R1, Cmask
+        STRB    R1, [R0]        ; store back to Output Data Reg
+        
+        LDR     R0, =P2OUT
+        ORR     R1, Amask
+        ORR     R1, Dmask
+        ORR     R1, Emask
+        ORR     R1, Fmask
+        ORR     R1, Gmask
+        STRB    R1, [R0]
+        
+        BX      LR
+        
+F
+        ; A E F G segments
+        LDR     R0, =P1OUT      ; load Output Data Reg in R1
+        LDRB    R1, [R0]
+        BIC     R1, Bmask
+        BIC     R1, Cmask
+        STRB    R1, [R0]        ; store back to Output Data Reg
+        
+        LDR     R0, =P2OUT
+        ORR     R1, Amask
+        BIC     R1, Dmask
+        ORR     R1, Emask
+        ORR     R1, Fmask
+        ORR     R1, Gmask
+        STRB    R1, [R0]
+        
+        BX      LR
+; 1/2 second delay
+delayMs
        
 L1      SUBS    R0, #1          ; inner loop
         BNE     L1
         BX      LR
-
-allOFF ; turn all segments off
-		LDR     R0, =P2OUT   
-		LDRB    R1, [R0]
-		ORR		R1, segB_mask
-		STRB	R1, [R0]
-		
-		LDR     R0, =P3OUT   
-		LDRB    R1, [R0]
-		ORR		R1, #224
-		STRB	R1, [R0]
-		
-		LDR     R0, =P5OUT   
-		LDRB    R1, [R0]
-		ORR		R1, #7
-		STRB	R1, [R0]
-		
-		BX LR
-		
-displayA ; turn on port 3.6
-		LDR     R0, =P3OUT
-        LDRB    R1, [R0]
-        BIC     R1, segA_mask
-        STRB    R1, [R0]
-		BX      LR
-
-displayB ; turn on port 2.3
-		LDR     R0, =P2OUT
-        LDRB    R1, [R0]
-        BIC     R1, segB_mask
-        STRB    R1, [R0]
-		BX      LR
-
-displayC ; turn on port 3.7
-		LDR     R0, =P3OUT
-        LDRB    R1, [R0]
-        BIC     R1, segC_mask
-        STRB    R1, [R0]
-		BX      LR
-
-displayD ; turn on port 3.5
-		LDR     R0, =P3OUT
-        LDRB    R1, [R0]
-        BIC     R1, segD_mask
-        STRB    R1, [R0]
-		BX      LR
-		
-displayE ; turn on port 5.1
-		LDR     R0, =P5OUT
-        LDRB    R1, [R0]
-        BIC     R1, segE_mask
-        STRB    R1, [R0]
-		BX      LR
-		
-displayF ; turn on port 5.2
-		LDR     R0, =P5OUT
-        LDRB    R1, [R0]
-        BIC     R1, segF_mask
-        STRB    R1, [R0]
-		BX      LR
-
-displayG ; turn on port 5.0
-		LDR     R0, =P5OUT
-        LDRB    R1, [R0]
-        BIC     R1, segG_mask
-        STRB    R1, [R0]
-		BX      LR
-
+       
         END
-			
